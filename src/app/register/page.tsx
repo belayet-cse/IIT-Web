@@ -57,13 +57,13 @@ function LeftPanel() {
   const benefits = [
     { title: "Alumni Directory", desc: "Connect with 278 professionals across 18 countries" },
     { title: "Private Forum", desc: "Exchange insights and stay updated with certified peers" },
-    { title: "Certification Discounts", desc: "Verified members save up to 20% on IIT programs" },
+    { title: "Certification Discounts", desc: "Verified members save up to 20% on IITrade programs" },
     { title: "Exclusive Events", desc: "Invitations to reunions, webinars, and mentorship sessions" },
   ]
   return (
     <div className="text-white max-w-sm">
       <span className="text-eyebrow block mb-5" style={{ color: "var(--gold-light)" }}>
-        Join IIT
+        Join IITrade
       </span>
       <h2 className="font-heading text-[34px] leading-[1.2] text-white mb-4">
         Be part of a global community
@@ -346,7 +346,7 @@ export default function RegisterPage() {
                   <Link href="/privacy" className="text-navy font-semibold hover:underline underline-offset-2">
                     Privacy Policy
                   </Link>
-                  , and to receive account-related communications from IIT.
+                  , and to receive account-related communications from IITrade.
                 </span>
               </label>
               {errors.agreed && (
@@ -368,7 +368,7 @@ export default function RegisterPage() {
         <p className="text-center text-[12px] text-muted-foreground mt-7">
           Back to{" "}
           <Link href="/" className="text-navy font-semibold hover:underline underline-offset-2">
-            IIT homepage
+            IITrade homepage
           </Link>
         </p>
       </div>

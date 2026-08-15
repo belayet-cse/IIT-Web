@@ -398,7 +398,7 @@ function HonoraryTab({ token, onCreated }: { token: string; onCreated: () => voi
         <FormGroup label="Reason for Honorary Membership">
           <Textarea
             rows={3}
-            placeholder="e.g. 25 years in trade services, contributed to IIT's founding curriculum…"
+            placeholder="e.g. 25 years in trade services, contributed to IITrade's founding curriculum…"
             value={form.bio}
             onChange={(e) => set("bio", e.target.value)}
           />

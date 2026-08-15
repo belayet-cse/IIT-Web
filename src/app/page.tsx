@@ -96,7 +96,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* About IIT */}
+        {/* About IITrade */}
         <section className="py-16 bg-card">
           <div className="max-w-[1180px] mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
@@ -224,7 +224,7 @@ export default function HomePage() {
                 initials="DC"
                 name="David Chen"
                 role="Trade Analyst"
-                quote="Connecting with the IIT alumni network has been invaluable. The exchange of practical insights regarding emerging market regulations has given our team a significant competitive edge."
+                quote="Connecting with the IITrade alumni network has been invaluable. The exchange of practical insights regarding emerging market regulations has given our team a significant competitive edge."
                 className="bg-[#2b3040] border-white/10"
               />
             </div>
@@ -315,7 +315,7 @@ export default function HomePage() {
               </button>
             </form>
             <p className="text-xs text-muted-foreground/70 mt-4">
-              By subscribing, you agree to our Privacy Policy and consent to receive updates from IIT.
+              By subscribing, you agree to our Privacy Policy and consent to receive updates from IITrade.
             </p>
           </div>
         </section>

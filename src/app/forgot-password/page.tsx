@@ -167,7 +167,7 @@ export default function ForgotPasswordPage() {
                   <p className="text-[12px] text-destructive mt-1.5">{error}</p>
                 )}
                 <p className="text-[12px] text-muted-foreground mt-1.5">
-                  We'll send a reset link to this address if it's registered with IIT.
+                  We'll send a reset link to this address if it's registered with IITrade.
                 </p>
               </div>
 

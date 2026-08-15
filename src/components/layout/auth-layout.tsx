@@ -40,7 +40,7 @@ export function AuthLayout({ leftContent, children, className }: AuthLayoutProps
         <div className="relative z-10 flex flex-col h-full p-12">
           {/* Brand */}
           <Link href="/" className="group flex items-end gap-2.5 w-fit">
-            <span className="font-heading text-[26px] text-gold font-bold leading-none">IIT</span>
+            <span className="font-heading text-[26px] text-gold font-bold leading-none">IITrade</span>
             <span className="text-[10px] text-white/40 uppercase tracking-[0.14em] leading-none mb-[3px] font-sans">
               Institute of International Trade
             </span>
@@ -79,7 +79,7 @@ export function AuthLayout({ leftContent, children, className }: AuthLayoutProps
           {/* Mobile-only logo */}
           <div className="lg:hidden mb-8">
             <Link href="/" className="font-heading text-2xl text-gold font-bold">
-              IIT
+              IITrade
             </Link>
             <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-0.5">
               Institute of International Trade

@@ -220,7 +220,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center">
               <span className="bg-background px-3 text-[12px] text-muted-foreground">
-                New to IIT?
+                New to IITrade?
               </span>
             </div>
           </div>
@@ -237,7 +237,7 @@ export default function LoginPage() {
         <p className="text-center text-[12px] text-muted-foreground mt-7">
           Back to{" "}
           <Link href="/" className="text-navy font-semibold hover:underline underline-offset-2">
-            IIT homepage
+            IITrade homepage
           </Link>
         </p>
       </div>

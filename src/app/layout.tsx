@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IIT Alumni Network",
-  description: "IIT Alumni Network Platform",
+  title: "IITrade Alumni Network",
+  description: "IITrade Alumni Network Platform",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -96,7 +96,7 @@ export default function AlumniPage() {
         <Hero
           eyebrow="Alumni Network"
           title="Alumni Network"
-          subtitle="Connect with IIT graduates across the global trade finance community. Find mentors, colleagues, and career opportunities."
+          subtitle="Connect with IITrade graduates across the global trade finance community. Find mentors, colleagues, and career opportunities."
         />
 
         {/* Stats */}
@@ -127,7 +127,7 @@ export default function AlumniPage() {
                       day: "numeric",
                       year: "numeric",
                     })}
-                    ) is with IIT admin for review — typically 3–5 business days. You'll gain full
+                    ) is with IITrade admin for review — typically 3–5 business days. You'll gain full
                     directory access as soon as it's approved.
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export default function AlumniPage() {
                   </div>
 
                   <p className="max-w-[840px] mx-auto mt-[22px] text-center text-[12.5px] text-muted-foreground">
-                    Honorary members are added directly by IIT admin and do not need to apply. If you believe
+                    Honorary members are added directly by IITrade admin and do not need to apply. If you believe
                     you already have alumni access, contact{" "}
                     <strong className="text-navy">iitrade.org@gmail.com</strong>.
                   </p>
@@ -289,14 +289,14 @@ export default function AlumniPage() {
             <div className="text-center mb-10">
               <h2 className="font-heading text-[30px] text-navy mb-2">Alumni Events</h2>
               <p className="text-sm text-muted-foreground">
-                Exclusive networking events, reunions, and webinars for IIT alumni.
+                Exclusive networking events, reunions, and webinars for IITrade alumni.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-[22px]">
               <EventCard
                 tag="Alumni Reunion"
-                title="IIT Annual Alumni Gathering 2026"
-                description="A networking dinner for all IIT alumni to reconnect and celebrate the community's growth."
+                title="IITrade Annual Alumni Gathering 2026"
+                description="A networking dinner for all IITrade alumni to reconnect and celebrate the community's growth."
                 date="August 28, 2026"
                 location="Dhaka, Bangladesh"
                 rsvpHref="/alumni/events/reunion-2026"
@@ -304,7 +304,7 @@ export default function AlumniPage() {
               <EventCard
                 tag="Webinar"
                 title="Career Growth in Trade Finance — Alumni Panel"
-                description="Senior alumni share career insights and the impact of IIT certifications on their trajectory."
+                description="Senior alumni share career insights and the impact of IITrade certifications on their trajectory."
                 date="June 22, 2026"
                 location="Online"
                 rsvpHref="/alumni/events/webinar-june"
@@ -312,7 +312,7 @@ export default function AlumniPage() {
               <EventCard
                 tag="Mentorship"
                 title="Alumni Mentorship Matching Session"
-                description="Connect with junior members working towards the IIT community through structured mentorship."
+                description="Connect with junior members working towards the IITrade community through structured mentorship."
                 date="May 30, 2026"
                 location="Alumni Only"
                 rsvpHref="/alumni/events/mentorship-may"
@@ -327,19 +327,19 @@ export default function AlumniPage() {
             <div className="text-center mb-10">
               <h2 className="font-heading text-[30px] text-navy mb-2">Alumni Stories</h2>
               <p className="text-sm text-muted-foreground">
-                Real stories from IIT graduates who transformed their careers.
+                Real stories from IITrade graduates who transformed their careers.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-[22px]">
               <StoryCard
                 initials="RA"
-                quote="Passing the CDCS through IIT's program gave me the confidence and credibility to move into leadership at Standard Bank."
+                quote="Passing the CDCS through IITrade's program gave me the confidence and credibility to move into leadership at Standard Bank."
                 name="Rafiq Ahmed"
                 role="Trade Finance Manager, Standard Bank"
               />
               <StoryCard
                 initials="NI"
-                quote="The CSDG and CDCS combination through IIT positioned me perfectly for my current role overseeing trade operations at HSBC."
+                quote="The CSDG and CDCS combination through IITrade positioned me perfectly for my current role overseeing trade operations at HSBC."
                 name="Nafisa Islam"
                 role="Head of Trade Ops, HSBC Bangladesh"
               />

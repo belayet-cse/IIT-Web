@@ -106,7 +106,7 @@ export default function AlumniApplyPage() {
             </div>
             <h2 className="font-heading text-[28px] text-navy mb-3">Application submitted!</h2>
             <p className="text-sm text-muted-foreground mb-8">
-              Thanks for applying, {form.fullName}. IIT admin will review your application and
+              Thanks for applying, {form.fullName}. IITrade admin will review your application and
               respond within 3–5 business days.
             </p>
             <Link
@@ -139,7 +139,7 @@ export default function AlumniApplyPage() {
                 ? "There's no need to apply again — you already have full alumni access."
                 : `Your application is still under review${
                     existingApplication ? ` (submitted ${new Date(existingApplication.appliedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})` : ""
-                  }. IIT admin typically responds within 3–5 business days.`}
+                  }. IITrade admin typically responds within 3–5 business days.`}
             </p>
             <Link
               href="/alumni"
@@ -175,7 +175,7 @@ export default function AlumniApplyPage() {
             </h1>
             <p className="text-sm text-muted-foreground max-w-[520px] mx-auto">
               Membership is open to trade finance and trade services professionals who have completed
-              an IIT certification or program. Applications are reviewed by IIT admin, typically within
+              an IITrade certification or program. Applications are reviewed by IITrade admin, typically within
               3–5 business days.
             </p>
           </div>
@@ -279,8 +279,8 @@ export default function AlumniApplyPage() {
               </FormGroup>
             </div>
 
-            {/* IIT Certification */}
-            <FormSectionLabel>IIT Certification / Program</FormSectionLabel>
+            {/* IITrade Certification */}
+            <FormSectionLabel>IITrade Certification / Program</FormSectionLabel>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-[18px]">
               <FormGroup label="Certification Completed" required>
@@ -293,7 +293,7 @@ export default function AlumniApplyPage() {
                   <option value="CSDG">CSDG</option>
                   <option value="CITF">CITF</option>
                   <option value="CTFP">CTFP</option>
-                  <option value="OTHER">Other IIT Program</option>
+                  <option value="OTHER">Other IITrade Program</option>
                 </Select>
               </FormGroup>
               <FormGroup label="Year Completed" required>
@@ -319,7 +319,7 @@ export default function AlumniApplyPage() {
             <InfoNote>
               Alumni membership connects you to <b>mentorship</b>,{" "}
               <b>structured networking</b> across institutions and generations, and access to
-              best-practice publications developed by the IIT Alumni community. Members are expected
+              best-practice publications developed by the IITrade Alumni community. Members are expected
               to uphold the Alumni Code of Professionalism and participate in at least one Alumni
               initiative where feasible. Read the full{" "}
               <a href="/alumni/charter">Alumni Charter</a>.
@@ -333,7 +333,7 @@ export default function AlumniApplyPage() {
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
               />
-              I confirm the information above is accurate and I agree to uphold the IIT Alumni
+              I confirm the information above is accurate and I agree to uphold the IITrade Alumni
               Code of Professionalism.
             </label>
 
