@@ -15,7 +15,7 @@ export function Hero({ eyebrow, title, subtitle, className, children }: HeroProp
       className={cn("relative overflow-hidden text-white text-center py-[72px] pb-[48px]", className)}
       style={{
         background:
-          "linear-gradient(160deg, rgba(10,18,41,.94), rgba(10,18,41,.86)), radial-gradient(circle at 80% 20%, rgba(201,168,76,.18), transparent 55%)",
+          "linear-gradient(160deg, rgba(10,48,102,.94), rgba(10,48,102,.86)), radial-gradient(circle at 80% 20%, rgba(245,158,11,.18), transparent 55%)",
       }}
     >
       <div

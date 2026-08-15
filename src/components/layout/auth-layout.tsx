@@ -26,14 +26,14 @@ export function AuthLayout({ leftContent, children, className }: AuthLayoutProps
           className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle, rgba(201,168,76,.10) 0%, transparent 65%)",
+              "radial-gradient(circle, rgba(245,158,11,.10) 0%, transparent 65%)",
           }}
         />
         <div
           className="absolute -bottom-24 -left-24 w-[360px] h-[360px] rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle, rgba(201,168,76,.06) 0%, transparent 65%)",
+              "radial-gradient(circle, rgba(245,158,11,.06) 0%, transparent 65%)",
           }}
         />
 

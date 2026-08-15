@@ -79,7 +79,7 @@ export default function AlumniPage() {
     return (
       <>
         <TopNav />
-        <main className="pt-20 min-h-[60vh] flex items-center justify-center text-muted-foreground text-sm">
+        <main className="min-h-[60vh] flex items-center justify-center text-muted-foreground text-sm">
           Loading…
         </main>
         <Footer />
@@ -90,7 +90,7 @@ export default function AlumniPage() {
   return (
     <>
       <TopNav />
-      <main className="pt-20">
+      <main>
 
         {/* Hero */}
         <Hero

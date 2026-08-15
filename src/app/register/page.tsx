@@ -77,7 +77,7 @@ function LeftPanel() {
           <div key={b.title} className="flex items-start gap-3">
             <div
               className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ backgroundColor: "rgba(201,168,76,.18)" }}
+              style={{ backgroundColor: "rgba(245,158,11,.18)" }}
             >
               <Check className="w-3 h-3" style={{ color: "var(--gold)" }} />
             </div>

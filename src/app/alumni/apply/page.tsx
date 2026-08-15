@@ -99,7 +99,7 @@ export default function AlumniApplyPage() {
     return (
       <>
         <TopNav />
-        <main className="pt-20 bg-background min-h-screen">
+        <main className="bg-background min-h-screen">
           <div className="max-w-[600px] mx-auto px-6 py-24 text-center">
             <div className="w-16 h-16 rounded-full bg-success-bg flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-8 h-8" style={{ color: "var(--success-text)" }} />
@@ -129,7 +129,7 @@ export default function AlumniApplyPage() {
     return (
       <>
         <TopNav />
-        <main className="pt-20 bg-background min-h-screen">
+        <main className="bg-background min-h-screen">
           <div className="max-w-[560px] mx-auto px-6 py-24 text-center">
             <h2 className="font-heading text-[28px] text-navy mb-3">
               {isAlumniAlready ? "You're already an alumni member" : "Application already submitted"}

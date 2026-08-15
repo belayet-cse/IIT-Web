@@ -34,7 +34,7 @@ function LeftPanel() {
           <div key={item.text} className="flex items-center gap-3">
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: "rgba(201,168,76,.12)" }}
+              style={{ backgroundColor: "rgba(245,158,11,.12)" }}
             >
               {item.icon}
             </div>
