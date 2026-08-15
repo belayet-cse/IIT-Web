@@ -215,7 +215,9 @@ const emptyForm: BlogFormFields = {
   readingTime: undefined,
 }
 
-const MAX_FEATURED_IMAGE_BYTES = 4 * 1024 * 1024
+const MAX_FEATURED_IMAGE_BYTES = 8 * 1024 * 1024
+const FEATURED_IMAGE_MAX_WIDTH = 1000
+const FEATURED_IMAGE_JPEG_QUALITY = 0.8
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -226,20 +228,55 @@ function readFileAsDataUrl(file: File): Promise<string> {
   })
 }
 
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error("Failed to decode image"))
+    img.src = src
+  })
+}
+
+// Downscales and re-encodes as JPEG in the browser before it ever hits the
+// network — keeps uploads (and the resulting API payload) small regardless
+// of how large the original photo is.
+async function resizeImageFile(file: File): Promise<string> {
+  const original = await readFileAsDataUrl(file)
+  const img = await loadImage(original)
+
+  const scale = Math.min(1, FEATURED_IMAGE_MAX_WIDTH / img.width)
+  const width = Math.round(img.width * scale)
+  const height = Math.round(img.height * scale)
+
+  const canvas = document.createElement("canvas")
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return original
+  ctx.drawImage(img, 0, 0, width, height)
+
+  const resized = canvas.toDataURL("image/jpeg", FEATURED_IMAGE_JPEG_QUALITY)
+  return resized.length < original.length ? resized : original
+}
+
 function FeaturedImageField({ value, onChange }: { value: string; onChange: (dataUrl: string) => void }) {
   const [error, setError] = useState("")
+  const [processing, setProcessing] = useState(false)
 
   async function handleFile(file: File | null) {
     if (!file) return
     setError("")
     if (file.size > MAX_FEATURED_IMAGE_BYTES) {
-      setError("Image is too large — please use one under 4MB.")
+      setError("Image is too large — please use one under 8MB.")
       return
     }
+    setProcessing(true)
     try {
-      onChange(await readFileAsDataUrl(file))
+      onChange(await resizeImageFile(file))
     } catch {
       setError("Failed to read the selected image.")
+    } finally {
+      setProcessing(false)
     }
   }
 
@@ -253,6 +290,8 @@ function FeaturedImageField({ value, onChange }: { value: string; onChange: (dat
             Remove image
           </Button>
         </div>
+      ) : processing ? (
+        <p className="text-[13px] text-muted-foreground py-2">Processing image…</p>
       ) : (
         <Input type="file" accept="image/*" className="py-2" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
       )}
