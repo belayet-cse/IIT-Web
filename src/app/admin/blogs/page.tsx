@@ -22,11 +22,13 @@ import {
   deleteBlog,
   getAdminBlog,
   getAdminBlogs,
+  getCategories,
   updateBlog,
   type AdminBlogRow,
   type BlogDetail,
   type BlogFormFields,
   type BlogStatus,
+  type Category,
 } from "@/lib/api"
 
 // ── Content helpers ──────────────────────────────────────────────────────────
@@ -212,6 +214,7 @@ const emptyForm: BlogFormFields = {
   metaDescription: "",
   category: "",
   status: "DRAFT",
+  price: 0,
   readingTime: undefined,
 }
 
@@ -293,7 +296,14 @@ function FeaturedImageField({ value, onChange }: { value: string; onChange: (dat
       ) : processing ? (
         <p className="text-[13px] text-muted-foreground py-2">Processing image…</p>
       ) : (
-        <Input type="file" accept="image/*" className="py-2" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
+        <>
+          <Input type="file" accept="image/*" className="py-2 mb-3" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
+          <label className="block text-[12px] text-muted-foreground mb-1.5">Or paste an image URL</label>
+          <Input
+            placeholder="https://example.com/image.jpg"
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </>
       )}
       {error && <p className="text-[12px] text-destructive mt-1.5">{error}</p>}
     </div>
@@ -312,14 +322,20 @@ function EditorTab({
   onCancel: () => void
 }) {
   const [form, setForm] = useState<BlogFormFields>(emptyForm)
+  const [tagsInput, setTagsInput] = useState("")
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(!!editingId)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
+    getCategories().then(setCategories).catch(() => {})
+  }, [])
+
+  useEffect(() => {
     if (!editingId) return
     getAdminBlog(token, editingId)
-      .then((post: BlogDetail) =>
+      .then((post: BlogDetail) => {
         setForm({
           title: post.title,
           slug: post.slug,
@@ -330,9 +346,11 @@ function EditorTab({
           metaDescription: post.metaDescription ?? "",
           category: post.category ?? "",
           status: post.status,
+          price: post.price,
           readingTime: post.readingTime,
         })
-      )
+        setTagsInput(post.tags.join(", "))
+      })
       .catch((err) => setError(err instanceof ApiError ? err.message : "Failed to load post."))
       .finally(() => setLoading(false))
   }, [token, editingId])
@@ -350,6 +368,10 @@ function EditorTab({
     setError("")
     setIsSaving(true)
     try {
+      const tags = tagsInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
       const payload: BlogFormFields = {
         ...form,
         slug: form.slug?.trim() || undefined,
@@ -357,6 +379,7 @@ function EditorTab({
         metaTitle: form.metaTitle?.trim() || undefined,
         metaDescription: form.metaDescription?.trim() || undefined,
         category: form.category?.trim() || undefined,
+        tags,
         status,
       }
       if (editingId) {
@@ -375,38 +398,57 @@ function EditorTab({
   if (loading) return <p className="text-sm text-muted-foreground py-10 text-center">Loading…</p>
 
   return (
-    <div className="bg-card border border-border rounded-xl p-[30px] max-w-[820px]">
+    <div className="max-w-[820px]">
       {error && (
         <p className="text-[13px] text-destructive bg-destructive/10 rounded-lg px-3.5 py-2.5 mb-5">{error}</p>
       )}
 
-      <FormGroup label="Title" required>
-        <Input placeholder="e.g. The Definition of Confirming Bank" value={form.title} onChange={(e) => set("title", e.target.value)} />
-      </FormGroup>
+      <div className="bg-card border border-border rounded-xl p-[30px] mb-6">
+        <FormGroup label="Title" required>
+          <Input placeholder="e.g. The Definition of Confirming Bank" value={form.title} onChange={(e) => set("title", e.target.value)} />
+        </FormGroup>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormGroup label="Slug" hint="Leave blank to auto-generate from the title.">
           <Input placeholder="auto-generated-from-title" value={form.slug} onChange={(e) => set("slug", e.target.value)} />
         </FormGroup>
-        <FormGroup label="Category">
-          <Input placeholder="e.g. UCP" value={form.category} onChange={(e) => set("category", e.target.value)} />
+
+        <FormGroup label="Featured Image" hint="Shown on the blog listing and post header. JPG or PNG, up to 8MB.">
+          <FeaturedImageField value={form.featuredImage ?? ""} onChange={(dataUrl) => set("featuredImage", dataUrl)} />
         </FormGroup>
-      </div>
 
-      <FormGroup label="Featured Image" hint="Shown on the blog listing and post header. JPG or PNG, up to 4MB.">
-        <FeaturedImageField value={form.featuredImage ?? ""} onChange={(dataUrl) => set("featuredImage", dataUrl)} />
-      </FormGroup>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormGroup label="Category">
+            <Select value={form.category} onChange={(e) => set("category", e.target.value)}>
+              <option value="">Select category…</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+          </FormGroup>
+          <FormGroup label="Tags (Optional)">
+            <Input placeholder="comma, separated, tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
+          </FormGroup>
+          <FormGroup label="Price">
+            <Input
+              type="number"
+              min={0}
+              value={form.price ?? 0}
+              onChange={(e) => set("price", e.target.value ? Number(e.target.value) : 0)}
+            />
+          </FormGroup>
+        </div>
 
-      <FormGroup label="Excerpt" hint="Shown on the blog listing. Leave blank to auto-generate from the content.">
-        <Textarea rows={2} placeholder="Short teaser for this post…" value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} />
-      </FormGroup>
+        <FormGroup label="Excerpt" hint="Shown on the blog listing. Leave blank to auto-generate from the content.">
+          <Textarea rows={2} placeholder="Short teaser for this post…" value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} />
+        </FormGroup>
 
-      <FormGroup label="Content" required hint="Use the toolbar for headings, bold, color, alignment, and lists.">
-        <RichTextEditor value={form.content} onChange={(html) => set("content", html)} />
-      </FormGroup>
+        <FormGroup label="Content" required hint="Use the toolbar for headings, bold, color, alignment, and lists.">
+          <RichTextEditor value={form.content} onChange={(html) => set("content", html)} />
+        </FormGroup>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormGroup label="Reading time (minutes)" hint="Leave blank to auto-estimate from word count.">
+        <FormGroup label="Reading time (minutes)" hint="Leave blank to auto-estimate from word count." className="mb-0">
           <Input
             type="number"
             min={1}
@@ -415,14 +457,19 @@ function EditorTab({
             onChange={(e) => set("readingTime", e.target.value ? Number(e.target.value) : undefined)}
           />
         </FormGroup>
-        <FormGroup label="Meta title" hint="Used for SEO — defaults to the title if left blank.">
-          <Input value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />
-        </FormGroup>
       </div>
 
-      <FormGroup label="Meta description" hint="Used for SEO — defaults to the excerpt if left blank.">
-        <Textarea rows={2} value={form.metaDescription} onChange={(e) => set("metaDescription", e.target.value)} />
-      </FormGroup>
+      <div className="bg-card border border-border rounded-xl p-[30px] mb-6">
+        <h2 className="font-heading text-[19px] text-navy mb-5">SEO Settings</h2>
+
+        <FormGroup label="Meta Title (Optional)" hint="If empty, the post title will be used">
+          <Input placeholder="Title for search engines" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />
+        </FormGroup>
+
+        <FormGroup label="Meta Description (Optional)" hint="If empty, the excerpt will be used" className="mb-0">
+          <Textarea rows={2} placeholder="Description for search engines" value={form.metaDescription} onChange={(e) => set("metaDescription", e.target.value)} />
+        </FormGroup>
+      </div>
 
       <div className="flex gap-2 mt-2">
         <Button disabled={isSaving} onClick={() => handleSubmit("PUBLISHED")}>

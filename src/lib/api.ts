@@ -302,6 +302,7 @@ export interface BlogSummary {
   excerpt: string | null
   featuredImage: string | null
   category: string | null
+  tags: string[]
   readingTime: number
   price: number
   views: number
@@ -323,6 +324,7 @@ export interface PublicBlogDetail {
   metaTitle: string | null
   metaDescription: string | null
   category: string | null
+  tags: string[]
   readingTime: number
   price: number
   views: number
@@ -349,6 +351,7 @@ export interface AdminBlogRow {
   slug: string
   featuredImage: string | null
   category: string | null
+  tags: string[]
   status: BlogStatus
   views: number
   readingTime: number
@@ -367,6 +370,7 @@ export interface BlogDetail {
   metaTitle: string | null
   metaDescription: string | null
   category: string | null
+  tags: string[]
   status: BlogStatus
   price: number
   readingTime: number
@@ -386,6 +390,7 @@ export interface BlogFormFields {
   metaTitle?: string
   metaDescription?: string
   category?: string
+  tags?: string[]
   status?: BlogStatus
   price?: number
   readingTime?: number
@@ -440,4 +445,38 @@ export interface AdminStats {
 
 export function getAdminStats(token: string) {
   return apiFetch<AdminStats>("/admin/stats", { token })
+}
+
+// ── Categories ────────────────────────────────────────────────────────────────
+
+export interface Category {
+  id: string
+  name: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}
+
+export function getCategories() {
+  return apiFetch<Category[]>("/categories")
+}
+
+export function createCategory(token: string, name: string) {
+  return apiFetch<Category>("/categories/admin", { method: "POST", token, body: JSON.stringify({ name }) })
+}
+
+export function updateCategory(token: string, id: string, name: string) {
+  return apiFetch<Category>(`/categories/admin/${id}`, { method: "PATCH", token, body: JSON.stringify({ name }) })
+}
+
+export function deleteCategory(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/categories/admin/${id}`, { method: "DELETE", token })
+}
+
+export function reorderCategories(token: string, orderedIds: string[]) {
+  return apiFetch<Category[]>("/categories/admin/reorder", {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ orderedIds }),
+  })
 }
