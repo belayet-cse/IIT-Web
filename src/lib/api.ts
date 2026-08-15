@@ -73,6 +73,27 @@ export function resetPassword(data: { token: string; password: string }) {
   })
 }
 
+export interface MyProfile extends AuthUser {
+  phone: string | null
+  address: string | null
+}
+
+export function getMyProfile(token: string) {
+  return apiFetch<MyProfile>("/auth/me", { token })
+}
+
+export function updateMyProfile(token: string, data: { name?: string; phone?: string; address?: string }) {
+  return apiFetch<MyProfile>("/auth/me", { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function changeMyPassword(token: string, data: { currentPassword: string; newPassword: string }) {
+  return apiFetch<{ success: boolean }>("/auth/change-password", {
+    method: "PATCH",
+    token,
+    body: JSON.stringify(data),
+  })
+}
+
 // ── Alumni (public) ──────────────────────────────────────────────────────────
 
 export interface AlumniStats {
@@ -397,4 +418,26 @@ export function fileUrl(path?: string | null) {
   if (!path) return undefined
   const base = API_URL.replace(/\/api$/, "")
   return `${base}${path}`
+}
+
+// ── Admin dashboard ───────────────────────────────────────────────────────────
+
+export interface AdminStats {
+  totalBlogs: number
+  publishedBlogs: number
+  totalUsers: number
+  totalAlumni: number
+  pendingApplications: number
+  recentBlogs: {
+    id: string
+    title: string
+    slug: string
+    status: BlogStatus
+    views: number
+    createdAt: string
+  }[]
+}
+
+export function getAdminStats(token: string) {
+  return apiFetch<AdminStats>("/admin/stats", { token })
 }

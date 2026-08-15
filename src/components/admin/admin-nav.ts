@@ -1,7 +1,7 @@
 export const adminNavGroups = [
   {
     label: "Overview",
-    items: [{ label: "Dashboard" }, { label: "Analytics" }],
+    items: [{ label: "Dashboard", href: "/admin" }, { label: "Analytics" }],
   },
   {
     label: "Content",

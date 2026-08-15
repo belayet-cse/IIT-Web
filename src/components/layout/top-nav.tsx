@@ -2,7 +2,8 @@
 
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
+import { UserMenu } from "./user-menu"
 
 interface NavLink {
   label: string
@@ -50,14 +51,6 @@ export function TopNav({ links = defaultLinks, className }: TopNavProps) {
 
         {status === "authenticated" && session.user ? (
           <div className="flex items-center gap-4">
-            {session.user.role === "ADMIN" && (
-              <Link
-                href="/admin/alumni"
-                className="text-nav text-muted-foreground hover:text-gold transition-colors duration-200"
-              >
-                Admin Panel
-              </Link>
-            )}
             {session.user.role === "USER" && (
               <Link
                 href="/alumni/apply"
@@ -66,15 +59,7 @@ export function TopNav({ links = defaultLinks, className }: TopNavProps) {
                 Apply for Membership
               </Link>
             )}
-            <span className="text-nav text-navy font-semibold hidden sm:inline">
-              {session.user.name}
-            </span>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="bg-primary text-primary-foreground text-nav px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-opacity"
-            >
-              Sign out
-            </button>
+            <UserMenu name={session.user.name ?? "Account"} isAdmin={session.user.role === "ADMIN"} />
           </div>
         ) : (
           <div className="flex items-center gap-4">

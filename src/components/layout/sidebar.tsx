@@ -37,7 +37,9 @@ export function Sidebar({ navGroups, activeItem, onItemClick, className }: Sideb
             {group.label}
           </div>
           {group.items.map((item) => {
-            const isActive = item.href ? pathname.startsWith(item.href) : item.label === activeItem
+            const isActive = item.href
+              ? pathname === item.href || pathname.startsWith(`${item.href}/`)
+              : item.label === activeItem
             const itemClassName = cn(
               "flex items-center gap-[10px] px-[22px] py-[10px] text-nav text-white/80",
               "border-l-[3px] border-transparent cursor-pointer transition-colors",
