@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { TopNav } from "@/components/layout/top-nav"
 import { Footer } from "@/components/layout/footer"
@@ -41,21 +42,31 @@ const slides = [
   },
 ]
 
-const coFounders = [
+interface CoFounder {
+  name: string
+  title: string
+  linkedin: string
+  photo?: string
+}
+
+const coFounders: CoFounder[] = [
   {
     name: "ATM Nesarul Hoque",
     title: "Co-Founder & Director",
     linkedin: "https://www.linkedin.com/in/atm-nesarul-hoque-38593b13/",
+    photo: "/ATM_NESARUL_HAQUE.Jpeg",
   },
   {
     name: "Md Tanveer Bin Hasan",
     title: "Co-Founder & Director",
     linkedin: "https://www.linkedin.com/in/md-tanveer-bin-hasan-pmp-cdcs-cspo-csdg-cdts-ceeb-39a88b3b/",
+    photo: "/Md_Tanveer_Bin_Hasan.jpeg",
   },
   {
     name: "Md Belayet Hossain",
     title: "Co-Founder & Director",
     linkedin: "https://www.linkedin.com/in/mohammad-belayet-hossain/",
+    photo: "/Md_Belayet_hossain.jpeg",
   },
 ]
 
@@ -167,7 +178,17 @@ export default function HomePage() {
                   key={founder.name}
                   className="bg-card border border-border rounded-lg p-8 text-center hover:border-gold/50 transition-colors"
                 >
-                  <Avatar initials={founderInitials(founder.name)} size="md" className="mx-auto" />
+                  {founder.photo ? (
+                    <Image
+                      src={founder.photo}
+                      alt={founder.name}
+                      width={112}
+                      height={112}
+                      className="w-14 h-14 rounded-full object-cover mx-auto"
+                    />
+                  ) : (
+                    <Avatar initials={founderInitials(founder.name)} size="md" className="mx-auto" />
+                  )}
                   <h3 className="text-[15px] font-semibold text-navy mt-4 mb-1">{founder.name}</h3>
                   <p className="text-xs text-muted-foreground mb-3">{founder.title}</p>
                   <a
