@@ -314,6 +314,23 @@
     color: var(--muted-foreground);
     margin: 0 0 16px;
   }
+  .rich-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 0 0 16px;
+  }
+  .rich-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 16px;
+  }
+  .rich-content th,
+  .rich-content td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+  }
   .rich-content > *:first-child {
     margin-top: 0;
   }

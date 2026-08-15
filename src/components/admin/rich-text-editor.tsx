@@ -61,6 +61,9 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
       showXPathInStatusbar: false,
       askBeforePasteHTML: false,
       askBeforePasteFromWord: false,
+      // No upload backend configured — embed inserted images as base64 directly in the content.
+      uploader: { insertImageAsBase64URI: true },
+      imageDefaultWidth: 400,
     }),
     [placeholder]
   )

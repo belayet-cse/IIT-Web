@@ -97,6 +97,17 @@ export default function BlogPostPage() {
           </div>
         </section>
 
+        {post.featuredImage && (
+          <div className="max-w-[820px] mx-auto px-6 -mt-8 relative z-10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.featuredImage}
+              alt=""
+              className="w-full max-h-[420px] object-cover rounded-xl border border-border shadow-lg"
+            />
+          </div>
+        )}
+
         <article className="py-16">
           <div className="max-w-[720px] mx-auto px-6">
             {isHtml ? (

@@ -279,6 +279,7 @@ export interface BlogSummary {
   title: string
   slug: string
   excerpt: string | null
+  featuredImage: string | null
   category: string | null
   readingTime: number
   price: number
@@ -297,6 +298,7 @@ export interface PublicBlogDetail {
   slug: string
   excerpt: string | null
   content: string
+  featuredImage: string | null
   metaTitle: string | null
   metaDescription: string | null
   category: string | null
@@ -324,6 +326,7 @@ export interface AdminBlogRow {
   id: string
   title: string
   slug: string
+  featuredImage: string | null
   category: string | null
   status: BlogStatus
   views: number
@@ -339,6 +342,7 @@ export interface BlogDetail {
   slug: string
   excerpt: string | null
   content: string
+  featuredImage: string | null
   metaTitle: string | null
   metaDescription: string | null
   category: string | null
@@ -357,6 +361,7 @@ export interface BlogFormFields {
   slug?: string
   excerpt?: string
   content: string
+  featuredImage?: string
   metaTitle?: string
   metaDescription?: string
   category?: string

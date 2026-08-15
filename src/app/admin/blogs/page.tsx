@@ -140,6 +140,19 @@ function ListTab({
           emptyMessage="No blog posts yet."
           columns={[
             {
+              key: "featuredImage",
+              header: "Cover",
+              render: (row) =>
+                row.featuredImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={row.featuredImage} alt="" className="w-12 h-12 rounded-lg object-cover border border-border" />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground text-[10px]">
+                    No image
+                  </div>
+                ),
+            },
+            {
               key: "title",
               header: "Title",
               render: (row) => (
@@ -194,11 +207,58 @@ const emptyForm: BlogFormFields = {
   slug: "",
   excerpt: "",
   content: "",
+  featuredImage: "",
   metaTitle: "",
   metaDescription: "",
   category: "",
   status: "DRAFT",
   readingTime: undefined,
+}
+
+const MAX_FEATURED_IMAGE_BYTES = 4 * 1024 * 1024
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}
+
+function FeaturedImageField({ value, onChange }: { value: string; onChange: (dataUrl: string) => void }) {
+  const [error, setError] = useState("")
+
+  async function handleFile(file: File | null) {
+    if (!file) return
+    setError("")
+    if (file.size > MAX_FEATURED_IMAGE_BYTES) {
+      setError("Image is too large — please use one under 4MB.")
+      return
+    }
+    try {
+      onChange(await readFileAsDataUrl(file))
+    } catch {
+      setError("Failed to read the selected image.")
+    }
+  }
+
+  return (
+    <div>
+      {value ? (
+        <div className="flex items-center gap-3 mb-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt="" className="w-24 h-24 rounded-lg object-cover border border-border" />
+          <Button type="button" variant="outline" size="sm" onClick={() => onChange("")}>
+            Remove image
+          </Button>
+        </div>
+      ) : (
+        <Input type="file" accept="image/*" className="py-2" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
+      )}
+      {error && <p className="text-[12px] text-destructive mt-1.5">{error}</p>}
+    </div>
+  )
 }
 
 function EditorTab({
@@ -226,6 +286,7 @@ function EditorTab({
           slug: post.slug,
           excerpt: post.excerpt ?? "",
           content: toEditableHtml(post.content),
+          featuredImage: post.featuredImage ?? "",
           metaTitle: post.metaTitle ?? "",
           metaDescription: post.metaDescription ?? "",
           category: post.category ?? "",
@@ -292,6 +353,10 @@ function EditorTab({
           <Input placeholder="e.g. UCP" value={form.category} onChange={(e) => set("category", e.target.value)} />
         </FormGroup>
       </div>
+
+      <FormGroup label="Featured Image" hint="Shown on the blog listing and post header. JPG or PNG, up to 4MB.">
+        <FeaturedImageField value={form.featuredImage ?? ""} onChange={(dataUrl) => set("featuredImage", dataUrl)} />
+      </FormGroup>
 
       <FormGroup label="Excerpt" hint="Shown on the blog listing. Leave blank to auto-generate from the content.">
         <Textarea rows={2} placeholder="Short teaser for this post…" value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} />
