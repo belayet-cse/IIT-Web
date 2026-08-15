@@ -7,7 +7,7 @@ import { Eye, EyeOff, Lock, ShieldCheck, ArrowLeft } from "lucide-react"
 import { AuthLayout } from "@/components/layout/auth-layout"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { ApiError, resetPassword } from "@/lib/api"
 
 // ── Left panel ────────────────────────────────────────────────────────────────
@@ -89,10 +89,7 @@ function SuccessView() {
       <p className="text-sm text-muted-foreground mb-8 max-w-[320px] mx-auto">
         Your password has been reset successfully. You can now sign in with your new password.
       </p>
-      <Link
-        href="/login"
-        className="flex items-center justify-center w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-      >
+      <Link href="/login" className={buttonVariants({ variant: "default", size: "xl", className: "w-full" })}>
         Sign in to your account →
       </Link>
     </div>
@@ -173,10 +170,7 @@ function ResetPasswordContent() {
           <p className="text-sm text-muted-foreground mb-8 max-w-[320px] mx-auto">
             This link is invalid or has expired. Reset links are only valid for 24 hours.
           </p>
-          <Link
-            href="/forgot-password"
-            className="flex items-center justify-center w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-          >
+          <Link href="/forgot-password" className={buttonVariants({ variant: "default", size: "xl", className: "w-full" })}>
             Request a new link
           </Link>
           <p className="text-center text-[12px] text-muted-foreground mt-5">
@@ -305,7 +299,8 @@ function ResetPasswordContent() {
               {/* Submit */}
               <Button
                 type="submit"
-                className="w-full py-3 text-[14px] font-semibold"
+                size="xl"
+                className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? "Saving password…" : "Save new password →"}

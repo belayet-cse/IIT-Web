@@ -14,7 +14,7 @@ import { UploadBox } from "@/components/forms/upload-box"
 import { InfoNote } from "@/components/forms/info-note"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   ApiError,
   getMyApplication,
@@ -109,10 +109,7 @@ export default function AlumniApplyPage() {
               Thanks for applying, {form.fullName}. IIT admin will review your application and
               respond within 3–5 business days.
             </p>
-            <Link
-              href="/alumni"
-              className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-lg px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-            >
+            <Link href="/alumni" className={buttonVariants({ variant: "default", size: "xl" })}>
               Back to Alumni Network →
             </Link>
           </div>
@@ -141,10 +138,7 @@ export default function AlumniApplyPage() {
                     existingApplication ? ` (submitted ${new Date(existingApplication.appliedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})` : ""
                   }. IIT admin typically responds within 3–5 business days.`}
             </p>
-            <Link
-              href="/alumni"
-              className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-lg px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-            >
+            <Link href="/alumni" className={buttonVariants({ variant: "default", size: "xl" })}>
               Back to Alumni Network →
             </Link>
           </div>

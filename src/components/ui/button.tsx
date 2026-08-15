@@ -15,6 +15,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),white_8%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         /* Solid white on navy/dark backgrounds — hero & CTA secondary actions */
         inverse: "bg-white text-secondary hover:bg-gray-100",
+        /* Navy outline — secondary CTA on light backgrounds (card actions, gate cards) */
+        "outline-secondary":
+          "border-secondary text-secondary bg-transparent hover:bg-secondary hover:text-secondary-foreground",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:

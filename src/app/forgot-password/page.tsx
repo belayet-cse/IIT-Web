@@ -6,7 +6,7 @@ import { Mail, Lock, ArrowLeft, Send } from "lucide-react"
 import { AuthLayout } from "@/components/layout/auth-layout"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { forgotPassword } from "@/lib/api"
 
 // ── Left panel ────────────────────────────────────────────────────────────────
@@ -71,10 +71,7 @@ function SuccessView({ email }: { email: string }) {
         the email, check your <strong className="text-navy">spam or junk folder</strong>.
       </div>
 
-      <Link
-        href="/login"
-        className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-      >
+      <Link href="/login" className={buttonVariants({ variant: "default", size: "xl", className: "w-full gap-2" })}>
         Back to sign in
       </Link>
 
@@ -174,7 +171,8 @@ export default function ForgotPasswordPage() {
               {/* Submit */}
               <Button
                 type="submit"
-                className="w-full py-3 text-[14px] font-semibold"
+                size="xl"
+                className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? "Sending link…" : "Send reset link →"}

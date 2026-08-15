@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { buttonVariants } from "@/components/ui/button"
 
 interface EventCardProps {
   tag: string
@@ -25,10 +26,7 @@ export function EventCard({ tag, title, description, date, location, rsvpHref = 
         <div className="text-[11.5px] text-muted-foreground mb-3">
           📅 {date} &nbsp;·&nbsp; {location}
         </div>
-        <Link
-          href={rsvpHref}
-          className="inline-block border border-navy text-navy text-[12.5px] font-semibold px-4 py-2 rounded-lg hover:bg-navy hover:text-white transition-colors"
-        >
+        <Link href={rsvpHref} className={buttonVariants({ variant: "outline-secondary", size: "sm" })}>
           RSVP
         </Link>
       </div>

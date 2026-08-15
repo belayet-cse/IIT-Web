@@ -6,7 +6,7 @@ import { Eye, EyeOff, Mail, Lock, User, Check, CheckCircle } from "lucide-react"
 import { AuthLayout } from "@/components/layout/auth-layout"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { ApiError, registerUser } from "@/lib/api"
 
 // ── Password strength ─────────────────────────────────────────────────────────
@@ -184,10 +184,7 @@ export default function RegisterPage() {
             <strong className="text-navy">{form.email}</strong>. Please check your inbox and
             verify your address to activate your account.
           </p>
-          <Link
-            href="/login"
-            className="inline-flex items-center justify-center w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-          >
+          <Link href="/login" className={buttonVariants({ variant: "default", size: "xl", className: "w-full" })}>
             Go to sign in →
           </Link>
           <p className="text-[12px] text-muted-foreground mt-4">
@@ -357,7 +354,8 @@ export default function RegisterPage() {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full py-3 text-[14px] font-semibold"
+              size="xl"
+              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? "Creating account…" : "Create account →"}

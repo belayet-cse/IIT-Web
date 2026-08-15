@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { buttonVariants } from "@/components/ui/button"
 
 interface GateCardProps {
   variant?: "primary" | "outline"
@@ -41,21 +42,9 @@ export function GateCard({
       <p className={cn("text-[13.5px] mb-[22px]", isPrimary ? "text-white/70" : "text-muted-foreground")}>
         {description}
       </p>
-      {isPrimary ? (
-        <Link
-          href={buttonHref}
-          className="inline-block bg-primary text-primary-foreground text-[13.5px] font-semibold px-[22px] py-3 rounded-lg hover:bg-primary/90 transition-opacity"
-        >
-          {buttonLabel}
-        </Link>
-      ) : (
-        <Link
-          href={buttonHref}
-          className="inline-block border border-navy text-navy text-[13.5px] font-semibold px-[22px] py-3 rounded-lg hover:bg-navy hover:text-white transition-colors"
-        >
-          {buttonLabel}
-        </Link>
-      )}
+      <Link href={buttonHref} className={buttonVariants({ variant: isPrimary ? "default" : "outline-secondary", size: "lg" })}>
+        {buttonLabel}
+      </Link>
     </div>
   )
 }

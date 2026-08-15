@@ -10,6 +10,7 @@ import { StatBar } from "@/components/shared/stat-bar"
 import { ForumBanner } from "@/components/shared/forum-banner"
 import { LockedOverlay } from "@/components/shared/locked-overlay"
 import { GateCard } from "@/components/cards/gate-card"
+import { buttonVariants } from "@/components/ui/button"
 import { AlumCard } from "@/components/cards/alum-card"
 import { Avatar } from "@/components/ui/avatar"
 import { EventCard } from "@/components/cards/event-card"
@@ -138,10 +139,7 @@ export default function AlumniPage() {
                     {myApplication.rejectionReason ||
                       "Your previous alumni application wasn't approved. You're welcome to reapply with updated details."}
                   </p>
-                  <Link
-                    href="/alumni/apply"
-                    className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-lg px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
-                  >
+                  <Link href="/alumni/apply" className={buttonVariants({ variant: "default", size: "xl" })}>
                     Reapply for Membership →
                   </Link>
                 </div>
