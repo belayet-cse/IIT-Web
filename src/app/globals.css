@@ -266,4 +266,58 @@
     border-left: 3px solid var(--gold);
     background-color: rgba(201, 168, 76, 0.10);
   }
+
+  /* Rich text content — shared by the admin editor and the public post view */
+  .rich-content h2 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 28px 0 12px;
+  }
+  .rich-content h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 22px 0 10px;
+  }
+  .rich-content p {
+    margin: 0 0 16px;
+    line-height: 1.75;
+  }
+  .rich-content ul,
+  .rich-content ol {
+    margin: 0 0 16px;
+    padding-left: 24px;
+  }
+  .rich-content ul {
+    list-style: disc;
+  }
+  .rich-content ol {
+    list-style: decimal;
+  }
+  .rich-content li {
+    margin-bottom: 6px;
+  }
+  .rich-content a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .rich-content strong {
+    font-weight: 700;
+  }
+  .rich-content blockquote {
+    border-left: 3px solid var(--gold);
+    padding-left: 16px;
+    color: var(--muted-foreground);
+    margin: 0 0 16px;
+  }
+  .rich-content > *:first-child {
+    margin-top: 0;
+  }
+  .rich-content > *:last-child {
+    margin-bottom: 0;
+  }
 }

@@ -9,6 +9,7 @@ import { Topbar } from "@/components/layout/topbar"
 import { AdminTabs } from "@/components/admin/admin-tabs"
 import { DataTable } from "@/components/admin/data-table"
 import { adminNavGroups } from "@/components/admin/admin-nav"
+import { RichTextEditor } from "@/components/admin/rich-text-editor"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,6 +28,29 @@ import {
   type BlogFormFields,
   type BlogStatus,
 } from "@/lib/api"
+
+// ── Content helpers ──────────────────────────────────────────────────────────
+
+function looksLikeHtml(content: string) {
+  return /<\/?[a-z][\s\S]*>/i.test(content)
+}
+
+function escapeHtml(text: string) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+}
+
+// Legacy posts were stored as plain text with blank-line-separated paragraphs.
+// Wrap them in <p> tags so they load into the rich editor as real paragraphs
+// instead of one run-on block.
+function toEditableHtml(content: string) {
+  if (looksLikeHtml(content)) return content
+  return content
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${escapeHtml(p)}</p>`)
+    .join("")
+}
 
 // ── List tab ─────────────────────────────────────────────────────────────────
 
@@ -201,7 +225,7 @@ function EditorTab({
           title: post.title,
           slug: post.slug,
           excerpt: post.excerpt ?? "",
-          content: post.content,
+          content: toEditableHtml(post.content),
           metaTitle: post.metaTitle ?? "",
           metaDescription: post.metaDescription ?? "",
           category: post.category ?? "",
@@ -218,7 +242,8 @@ function EditorTab({
   }
 
   async function handleSubmit(status: BlogStatus) {
-    if (!form.title.trim() || !form.content.trim()) {
+    const contentIsEmpty = form.content.replace(/<[^>]*>/g, "").trim().length === 0
+    if (!form.title.trim() || contentIsEmpty) {
       setError("Title and content are required.")
       return
     }
@@ -272,8 +297,8 @@ function EditorTab({
         <Textarea rows={2} placeholder="Short teaser for this post…" value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} />
       </FormGroup>
 
-      <FormGroup label="Content" required hint="Plain text or HTML — rendered as written on the public post.">
-        <Textarea rows={16} placeholder="Write the full post here…" value={form.content} onChange={(e) => set("content", e.target.value)} />
+      <FormGroup label="Content" required hint="Use the toolbar for headings, bold, color, alignment, and lists.">
+        <RichTextEditor value={form.content} onChange={(html) => set("content", html)} />
       </FormGroup>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -60,7 +60,8 @@ export default function BlogPostPage() {
     )
   }
 
-  const paragraphs = post.content.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
+  const isHtml = /<\/?[a-z][\s\S]*>/i.test(post.content)
+  const paragraphs = isHtml ? [] : post.content.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
 
   return (
     <>
@@ -98,11 +99,15 @@ export default function BlogPostPage() {
 
         <article className="py-16">
           <div className="max-w-[720px] mx-auto px-6">
-            {paragraphs.map((paragraph, i) => (
-              <p key={i} className="text-[16px] leading-[1.75] text-foreground mb-5">
-                {paragraph}
-              </p>
-            ))}
+            {isHtml ? (
+              <div className="rich-content text-[16px] text-foreground" dangerouslySetInnerHTML={{ __html: post.content }} />
+            ) : (
+              paragraphs.map((paragraph, i) => (
+                <p key={i} className="text-[16px] leading-[1.75] text-foreground mb-5">
+                  {paragraph}
+                </p>
+              ))
+            )}
 
             <div className="mt-12 pt-8 border-t border-border">
               <Link href="/blogs" className="text-gold text-nav hover:underline">
