@@ -17,6 +17,7 @@ interface TopNavProps {
 const defaultLinks: NavLink[] = [
   { label: "Programs", href: "/programs" },
   { label: "Research", href: "/research" },
+  { label: "Blogs", href: "/blogs" },
   { label: "Alumni", href: "/alumni" },
   { label: "About Us", href: "/about" },
 ]

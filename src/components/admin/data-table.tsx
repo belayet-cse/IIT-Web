@@ -6,14 +6,14 @@ interface Column<T> {
   render?: (row: T) => React.ReactNode
 }
 
-interface DataTableProps<T extends Record<string, unknown>> {
+interface DataTableProps<T extends object> {
   columns: Column<T>[]
   data: T[]
   emptyMessage?: string
   className?: string
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   emptyMessage = "No records found.",
@@ -52,7 +52,7 @@ export function DataTable<T extends Record<string, unknown>>({
                     key={col.key}
                     className="px-5 py-[14px] text-[13px] border-b border-[#f1f2f5] last:border-b-0 align-middle"
                   >
-                    {col.render ? col.render(row) : String(row[col.key] ?? "")}
+                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? "")}
                   </td>
                 ))}
               </tr>

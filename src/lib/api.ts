@@ -271,6 +271,123 @@ export function updatePrivilegeDefaults(token: string, data: Partial<PrivilegeDe
   })
 }
 
+// ── Blogs (public) ────────────────────────────────────────────────────────────
+
+export type BlogStatus = "DRAFT" | "PUBLISHED"
+
+export interface BlogSummary {
+  title: string
+  slug: string
+  excerpt: string | null
+  category: string | null
+  readingTime: number
+  price: number
+  views: number
+  author: string
+  publishedAt: string | null
+}
+
+export interface BlogListResult {
+  data: BlogSummary[]
+  meta: { page: number; limit: number; total: number; totalPages: number }
+}
+
+export interface PublicBlogDetail {
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  metaTitle: string | null
+  metaDescription: string | null
+  category: string | null
+  readingTime: number
+  price: number
+  views: number
+  author: string
+  publishedAt: string | null
+}
+
+export function getBlogs(params: { search?: string; category?: string; page?: number; limit?: number } = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v).map(([k, v]) => [k, String(v)])
+  ).toString()
+  return apiFetch<BlogListResult>(`/blogs${query ? `?${query}` : ""}`)
+}
+
+export function getBlogBySlug(slug: string) {
+  return apiFetch<PublicBlogDetail>(`/blogs/${slug}`)
+}
+
+// ── Blogs (admin) ─────────────────────────────────────────────────────────────
+
+export interface AdminBlogRow {
+  id: string
+  title: string
+  slug: string
+  category: string | null
+  status: BlogStatus
+  views: number
+  readingTime: number
+  author: string
+  publishedAt: string | null
+  updatedAt: string
+}
+
+export interface BlogDetail {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  metaTitle: string | null
+  metaDescription: string | null
+  category: string | null
+  status: BlogStatus
+  price: number
+  readingTime: number
+  views: number
+  authorId: string
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BlogFormFields {
+  title: string
+  slug?: string
+  excerpt?: string
+  content: string
+  metaTitle?: string
+  metaDescription?: string
+  category?: string
+  status?: BlogStatus
+  price?: number
+  readingTime?: number
+}
+
+export function getAdminBlogs(token: string, params: { search?: string; status?: BlogStatus } = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v) as [string, string][]
+  ).toString()
+  return apiFetch<AdminBlogRow[]>(`/blogs/admin${query ? `?${query}` : ""}`, { token })
+}
+
+export function getAdminBlog(token: string, id: string) {
+  return apiFetch<BlogDetail>(`/blogs/admin/${id}`, { token })
+}
+
+export function createBlog(token: string, data: BlogFormFields) {
+  return apiFetch<BlogDetail>("/blogs/admin", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function updateBlog(token: string, id: string, data: Partial<BlogFormFields>) {
+  return apiFetch<BlogDetail>(`/blogs/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deleteBlog(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/blogs/admin/${id}`, { method: "DELETE", token })
+}
+
 export function fileUrl(path?: string | null) {
   if (!path) return undefined
   const base = API_URL.replace(/\/api$/, "")

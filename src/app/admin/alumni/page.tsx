@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/layout/sidebar"
 import { Topbar } from "@/components/layout/topbar"
 import { AdminTabs } from "@/components/admin/admin-tabs"
 import { DefaultBanner } from "@/components/admin/default-banner"
+import { adminNavGroups } from "@/components/admin/admin-nav"
 import { Avatar } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Toggle } from "@/components/ui/toggle"
@@ -35,38 +36,6 @@ import {
   type PrivilegeDefaults,
   type PrivilegeRow,
 } from "@/lib/api"
-
-// ── Sidebar nav ──────────────────────────────────────────────────────────────
-
-const adminNavGroups = [
-  {
-    label: "Overview",
-    items: [{ label: "Dashboard" }, { label: "Analytics" }],
-  },
-  {
-    label: "Content",
-    items: [
-      { label: "Blog Posts" },
-      { label: "Certifications" },
-      { label: "Research Papers" },
-      { label: "Events" },
-      { label: "Facilitations" },
-    ],
-  },
-  {
-    label: "Community",
-    items: [
-      { label: "Q&A Moderation" },
-      { label: "Forum Moderation" },
-      { label: "Alumni" },
-      { label: "Researchers" },
-    ],
-  },
-  {
-    label: "Users",
-    items: [{ label: "All Users" }, { label: "Membership Tiers" }],
-  },
-]
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
