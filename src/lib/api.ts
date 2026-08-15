@@ -492,3 +492,35 @@ export function reorderCategories(token: string, orderedIds: string[]) {
     body: JSON.stringify({ orderedIds }),
   })
 }
+
+// ── Users ────────────────────────────────────────────────────────────────────
+
+export type UserRole = "ADMIN" | "ALUMNI" | "USER"
+
+export interface AdminUserRow {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  role: UserRole
+  emailVerified: boolean
+  createdAt: string
+}
+
+export function getAdminUsers(token: string, search?: string) {
+  const query = search ? `?search=${encodeURIComponent(search)}` : ""
+  return apiFetch<AdminUserRow[]>(`/users/admin${query}`, { token })
+}
+
+export interface UpdateUserFields {
+  name?: string
+  email?: string
+  phone?: string
+  address?: string
+  role?: UserRole
+  emailVerified?: boolean
+}
+
+export function updateAdminUser(token: string, id: string, data: UpdateUserFields) {
+  return apiFetch<AdminUserRow>(`/users/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}

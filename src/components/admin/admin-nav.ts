@@ -25,6 +25,6 @@ export const adminNavGroups = [
   },
   {
     label: "Users",
-    items: [{ label: "All Users" }, { label: "Membership Tiers" }],
+    items: [{ label: "All Users", href: "/admin/users" }, { label: "Membership Tiers" }],
   },
 ]
