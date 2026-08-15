@@ -9,6 +9,7 @@ import { ProgramCard } from "@/components/cards/program-card"
 import { EventCard } from "@/components/cards/event-card"
 import { NewsCard } from "@/components/cards/news-card"
 import { StoryCard } from "@/components/cards/story-card"
+import { Avatar } from "@/components/ui/avatar"
 
 const slides = [
   {
@@ -38,6 +39,27 @@ const slides = [
     btn1: { label: "Alumni Directory", href: "/alumni" },
     btn2: { label: "Apply Now", href: "/alumni/apply" },
   },
+]
+
+const coFounders = [
+  { name: "ATM Nesarul Hoque", title: "Co-Founder & Director" },
+  { name: "Md Tanveer Bin Hasan", title: "Co-Founder & Director" },
+  { name: "Md Belayet Hossain", title: "Co-Founder & Director" },
+]
+
+// Bangladeshi given names commonly carry an honorific first token (Md, ATM, etc.);
+// skip it so initials reflect the person's actual name rather than the honorific.
+function founderInitials(name: string) {
+  const tokens = name.trim().split(/\s+/)
+  const first = tokens.length > 2 ? tokens[1] : tokens[0]
+  const last = tokens[tokens.length - 1]
+  return `${first[0]}${last[0]}`.toUpperCase()
+}
+
+const socialLinks = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/institute-of-international-trade-iit/about/" },
+  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61577748026721" },
+  { label: "YouTube", href: "https://www.youtube.com/channel/UCAe6sZU944oeLVGQ2bOsehg" },
 ]
 
 export default function HomePage() {
@@ -115,6 +137,29 @@ export default function HomePage() {
             </div>
             <div className="relative rounded-lg overflow-hidden border border-border aspect-[4/3] bg-muted flex items-center justify-center">
               <span className="text-muted-foreground/30 text-7xl select-none">🏛️</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Co-Founders */}
+        <section className="py-16 bg-background">
+          <div className="max-w-[1180px] mx-auto px-8">
+            <SectionHeader
+              eyebrow="Leadership"
+              title="Meet Our Co-Founders"
+              subtitle="The founding team behind the Institute of International Trade."
+            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-[18px]">
+              {coFounders.map((founder) => (
+                <div
+                  key={founder.name}
+                  className="bg-card border border-border rounded-lg p-8 text-center hover:border-gold/50 transition-colors"
+                >
+                  <Avatar initials={founderInitials(founder.name)} size="md" className="mx-auto" />
+                  <h3 className="text-[15px] font-semibold text-navy mt-4 mb-1">{founder.name}</h3>
+                  <p className="text-xs text-muted-foreground">{founder.title}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -289,6 +334,69 @@ export default function HomePage() {
               >
                 Explore Programs
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact & Company Info */}
+        <section className="py-16 bg-card">
+          <div className="max-w-[1180px] mx-auto px-8">
+            <SectionHeader
+              eyebrow="Get in Touch"
+              title="Contact & Company Info"
+              subtitle="Reach out to the Institute of International Trade."
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="flex items-start gap-3">
+                  <span className="text-xl" aria-hidden>📍</span>
+                  <div>
+                    <div className="text-[13px] font-semibold text-navy mb-0.5">Address</div>
+                    <div className="text-sm text-muted-foreground">11/1 Indira Road, Dhaka, Bangladesh</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl" aria-hidden>📞</span>
+                  <div>
+                    <div className="text-[13px] font-semibold text-navy mb-0.5">Phone</div>
+                    <a href="tel:01841994705" className="text-sm text-muted-foreground hover:text-gold transition-colors">
+                      01841994705
+                    </a>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl" aria-hidden>🕘</span>
+                  <div>
+                    <div className="text-[13px] font-semibold text-navy mb-0.5">Hours</div>
+                    <div className="text-sm text-muted-foreground">Mon–Fri, 10am – 6pm</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl" aria-hidden>✉️</span>
+                  <div>
+                    <div className="text-[13px] font-semibold text-navy mb-0.5">Email</div>
+                    <a href="mailto:iitrade.org@gmail.com" className="text-sm text-muted-foreground hover:text-gold transition-colors">
+                      iitrade.org@gmail.com
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="text-[13px] font-semibold text-navy mb-3">Follow Us</div>
+                <div className="flex flex-wrap gap-3">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 border border-border rounded-lg px-4 py-2.5 text-sm font-semibold text-navy hover:border-gold hover:text-gold transition-colors"
+                    >
+                      {social.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
