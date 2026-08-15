@@ -524,3 +524,18 @@ export interface UpdateUserFields {
 export function updateAdminUser(token: string, id: string, data: UpdateUserFields) {
   return apiFetch<AdminUserRow>(`/users/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
 }
+
+// ── Contact ──────────────────────────────────────────────────────────────────
+
+export interface ContactInquiry {
+  name: string
+  email: string
+  phone?: string
+  category: string
+  subject: string
+  message: string
+}
+
+export function submitContactInquiry(data: ContactInquiry) {
+  return apiFetch<{ success: boolean }>("/contact", { method: "POST", body: JSON.stringify(data) })
+}
