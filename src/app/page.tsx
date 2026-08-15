@@ -42,9 +42,21 @@ const slides = [
 ]
 
 const coFounders = [
-  { name: "ATM Nesarul Hoque", title: "Co-Founder & Director" },
-  { name: "Md Tanveer Bin Hasan", title: "Co-Founder & Director" },
-  { name: "Md Belayet Hossain", title: "Co-Founder & Director" },
+  {
+    name: "ATM Nesarul Hoque",
+    title: "Co-Founder & Director",
+    linkedin: "https://www.linkedin.com/in/atm-nesarul-hoque-38593b13/",
+  },
+  {
+    name: "Md Tanveer Bin Hasan",
+    title: "Co-Founder & Director",
+    linkedin: "https://www.linkedin.com/in/md-tanveer-bin-hasan-pmp-cdcs-cspo-csdg-cdts-ceeb-39a88b3b/",
+  },
+  {
+    name: "Md Belayet Hossain",
+    title: "Co-Founder & Director",
+    linkedin: "https://www.linkedin.com/in/mohammad-belayet-hossain/",
+  },
 ]
 
 // Bangladeshi given names commonly carry an honorific first token (Md, ATM, etc.);
@@ -157,7 +169,15 @@ export default function HomePage() {
                 >
                   <Avatar initials={founderInitials(founder.name)} size="md" className="mx-auto" />
                   <h3 className="text-[15px] font-semibold text-navy mt-4 mb-1">{founder.name}</h3>
-                  <p className="text-xs text-muted-foreground">{founder.title}</p>
+                  <p className="text-xs text-muted-foreground mb-3">{founder.title}</p>
+                  <a
+                    href={founder.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-gold text-xs font-semibold hover:underline"
+                  >
+                    LinkedIn Profile →
+                  </a>
                 </div>
               ))}
             </div>
