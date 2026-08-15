@@ -352,6 +352,7 @@ export interface AdminBlogRow {
   featuredImage: string | null
   category: string | null
   tags: string[]
+  sequence: number
   status: BlogStatus
   views: number
   readingTime: number
@@ -396,11 +397,22 @@ export interface BlogFormFields {
   readingTime?: number
 }
 
-export function getAdminBlogs(token: string, params: { search?: string; status?: BlogStatus } = {}) {
+export function getAdminBlogs(
+  token: string,
+  params: { search?: string; status?: BlogStatus; category?: string } = {}
+) {
   const query = new URLSearchParams(
     Object.entries(params).filter(([, v]) => !!v) as [string, string][]
   ).toString()
   return apiFetch<AdminBlogRow[]>(`/blogs/admin${query ? `?${query}` : ""}`, { token })
+}
+
+export function reorderBlogs(token: string, category: string, orderedIds: string[]) {
+  return apiFetch<AdminBlogRow[]>("/blogs/admin/reorder", {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ category, orderedIds }),
+  })
 }
 
 export function getAdminBlog(token: string, id: string) {

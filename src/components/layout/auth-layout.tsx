@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -78,12 +79,9 @@ export function AuthLayout({ leftContent, children, className }: AuthLayoutProps
         <div className="w-full max-w-[440px]">
           {/* Mobile-only logo */}
           <div className="lg:hidden mb-8">
-            <Link href="/" className="font-heading text-2xl text-gold font-bold">
-              IITrade
+            <Link href="/" className="inline-flex">
+              <Image src="/iit-logo.png" alt="Institute of International Trade" width={167} height={45} className="h-9 w-auto" />
             </Link>
-            <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-0.5">
-              Institute of International Trade
-            </p>
           </div>
 
           {children}

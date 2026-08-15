@@ -10,6 +10,7 @@ import { AdminTabs } from "@/components/admin/admin-tabs"
 import { DataTable } from "@/components/admin/data-table"
 import { adminNavGroups } from "@/components/admin/admin-nav"
 import { RichTextEditor } from "@/components/admin/rich-text-editor"
+import { PostView } from "@/components/blog/post-view"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +24,7 @@ import {
   getAdminBlog,
   getAdminBlogs,
   getCategories,
+  reorderBlogs,
   updateBlog,
   type AdminBlogRow,
   type BlogDetail,
@@ -54,6 +56,13 @@ function toEditableHtml(content: string) {
     .join("")
 }
 
+// Rough estimate for the preview when the writer hasn't set an explicit
+// reading time yet — the server computes the authoritative value on save.
+function estimatePreviewReadingTime(html: string) {
+  const words = html.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.round(words / 200))
+}
+
 // ── List tab ─────────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: BlogStatus }) {
@@ -71,23 +80,43 @@ function ListTab({
 }) {
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState<BlogStatus | "">("")
+  const [category, setCategory] = useState("")
+  const [categories, setCategories] = useState<Category[]>([])
   const [rows, setRows] = useState<AdminBlogRow[]>([])
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [error, setError] = useState("")
 
+  useEffect(() => {
+    getCategories().then(setCategories).catch(() => {})
+  }, [])
+
   const loadRows = useCallback(() => {
     setLoading(true)
-    getAdminBlogs(token, { search: search || undefined, status: status || undefined })
+    getAdminBlogs(token, { search: search || undefined, status: status || undefined, category: category || undefined })
       .then(setRows)
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [token, search, status])
+  }, [token, search, status, category])
 
   useEffect(() => {
     const timeout = setTimeout(loadRows, 250)
     return () => clearTimeout(timeout)
   }, [loadRows, refreshKey])
+
+  async function moveInCategory(index: number, direction: -1 | 1) {
+    if (!category) return
+    const target = index + direction
+    if (target < 0 || target >= rows.length) return
+    const next = [...rows]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    setRows(next)
+    try {
+      await reorderBlogs(token, category, next.map((r) => r.id))
+    } catch {
+      loadRows()
+    }
+  }
 
   async function handleTogglePublish(row: AdminBlogRow) {
     setBusyId(row.id)
@@ -128,12 +157,28 @@ function ListTab({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Select className="w-[160px]" value={status} onChange={(e) => setStatus(e.target.value as BlogStatus | "")}>
-          <option value="">All statuses</option>
-          <option value="DRAFT">Draft</option>
-          <option value="PUBLISHED">Published</option>
-        </Select>
+        <div className="flex gap-3">
+          <Select className="w-[190px]" value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value="">All categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </Select>
+          <Select className="w-[160px]" value={status} onChange={(e) => setStatus(e.target.value as BlogStatus | "")}>
+            <option value="">All statuses</option>
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+          </Select>
+        </div>
       </div>
+
+      {category && (
+        <p className="text-[12.5px] text-muted-foreground mb-3">
+          Showing posts in <strong>{category}</strong> in the order readers will see them. Use the arrows to reorder.
+        </p>
+      )}
 
       {loading ? (
         <p className="text-sm text-muted-foreground py-10 text-center">Loading…</p>
@@ -141,6 +186,39 @@ function ListTab({
         <DataTable<AdminBlogRow>
           emptyMessage="No blog posts yet."
           columns={[
+            ...(category
+              ? [
+                  {
+                    key: "order",
+                    header: "Order",
+                    render: (row: AdminBlogRow) => {
+                      const index = rows.findIndex((r) => r.id === row.id)
+                      return (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => moveInCategory(index, -1)}
+                            className="text-muted-foreground hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed text-xs leading-none"
+                            title="Move up"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === rows.length - 1}
+                            onClick={() => moveInCategory(index, 1)}
+                            className="text-muted-foreground hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed text-xs leading-none"
+                            title="Move down"
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      )
+                    },
+                  },
+                ]
+              : []),
             {
               key: "featuredImage",
               header: "Cover",
@@ -321,12 +399,14 @@ function EditorTab({
   onSaved: () => void
   onCancel: () => void
 }) {
+  const { data: session } = useSession()
   const [form, setForm] = useState<BlogFormFields>(emptyForm)
   const [tagsInput, setTagsInput] = useState("")
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(!!editingId)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     getCategories().then(setCategories).catch(() => {})
@@ -359,13 +439,23 @@ function EditorTab({
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  async function handleSubmit(status: BlogStatus) {
+  function validateForm() {
     const contentIsEmpty = form.content.replace(/<[^>]*>/g, "").trim().length === 0
     if (!form.title.trim() || contentIsEmpty) {
       setError("Title and content are required.")
-      return
+      return false
     }
     setError("")
+    return true
+  }
+
+  function openPreview() {
+    if (!validateForm()) return
+    setShowPreview(true)
+  }
+
+  async function handleSubmit(status: BlogStatus) {
+    if (!validateForm()) return
     setIsSaving(true)
     try {
       const tags = tagsInput
@@ -472,16 +562,61 @@ function EditorTab({
       </div>
 
       <div className="flex gap-2 mt-2">
-        <Button disabled={isSaving} onClick={() => handleSubmit("PUBLISHED")}>
-          {isSaving ? "Saving…" : "Publish"}
+        <Button disabled={isSaving} onClick={openPreview}>
+          Preview
         </Button>
         <Button variant="secondary" disabled={isSaving} onClick={() => handleSubmit("DRAFT")}>
-          Save as draft
+          {isSaving ? "Saving…" : "Save as draft"}
         </Button>
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
       </div>
+
+      {showPreview && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto py-8 px-4"
+          onClick={() => setShowPreview(false)}
+        >
+          <div
+            className="bg-background rounded-xl w-full max-w-[900px] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-navy text-white px-6 py-3.5">
+              <span className="text-[13px] font-semibold">
+                Preview — this is exactly how readers will see the post. It isn&apos;t published yet.
+              </span>
+              <div className="flex gap-2 shrink-0">
+                <Button variant="outline" size="sm" onClick={() => setShowPreview(false)}>
+                  Back to Edit
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={isSaving}
+                  onClick={() => {
+                    setShowPreview(false)
+                    handleSubmit("PUBLISHED")
+                  }}
+                >
+                  {isSaving ? "Publishing…" : "Confirm & Publish"}
+                </Button>
+              </div>
+            </div>
+            <div className="max-h-[80vh] overflow-y-auto">
+              <PostView
+                title={form.title || "Untitled post"}
+                category={form.category}
+                author={session?.user?.name ?? "IIT Admin"}
+                readingTime={form.readingTime ?? estimatePreviewReadingTime(form.content)}
+                publishedAt={null}
+                featuredImage={form.featuredImage}
+                content={form.content}
+                showBackLink={false}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
