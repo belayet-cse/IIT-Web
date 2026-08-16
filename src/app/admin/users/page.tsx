@@ -23,7 +23,7 @@ import {
   type UserRole,
 } from "@/lib/api"
 
-const ROLE_OPTIONS: UserRole[] = ["USER", "ALUMNI", "ADMIN"]
+const ROLE_OPTIONS: UserRole[] = ["GENERAL", "PREMIUM", "ALUMNI", "RESEARCHER", "ADMIN"]
 
 function initialsOf(name: string) {
   return name.trim().slice(0, 2) || "?"

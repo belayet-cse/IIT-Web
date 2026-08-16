@@ -28,8 +28,8 @@ function LeftPanel() {
       {/* Testimonial */}
       <div className="border-l-[3px] pl-5" style={{ borderColor: "var(--gold)" }}>
         <p className="text-white/75 text-[13.5px] italic leading-relaxed mb-4">
-          "The alumni network opened doors I didn't know existed. Worth every moment of the
-          certification journey."
+          &ldquo;The alumni network opened doors I didn&apos;t know existed. Worth every moment of the
+          certification journey.&rdquo;
         </p>
         <div className="flex items-center gap-3">
           <div
@@ -109,7 +109,11 @@ export default function LoginPage() {
       return
     }
     const session = await getSession()
-    router.push(session?.user?.role === "ADMIN" ? "/admin/alumni" : "/alumni")
+    if (session?.mustChangePassword) {
+      router.push("/change-password")
+    } else {
+      router.push(session?.user?.role === "ADMIN" ? "/admin/alumni" : "/alumni")
+    }
     router.refresh()
   }
 

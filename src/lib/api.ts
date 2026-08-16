@@ -37,15 +37,34 @@ async function apiFetch<T>(
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
+export type UserRole = "ADMIN" | "ALUMNI" | "GENERAL" | "PREMIUM" | "RESEARCHER"
+export type MembershipTier = "BASIC" | "PRO" | "ELITE"
+export type RegistrationType = "GENERAL" | "PREMIUM" | "ALUMNI"
+export type AlumniVerificationStatus = "NONE" | "PENDING" | "VERIFIED"
+
 export interface AuthUser {
   id: string
   name: string
   email: string
-  role: "ADMIN" | "ALUMNI" | "USER"
+  role: UserRole
   emailVerified: boolean
+  organization: string | null
+  mustChangePassword: boolean
+  alumniVerificationStatus: AlumniVerificationStatus
+  desiredMembershipTier: MembershipTier | null
 }
 
-export function registerUser(data: { name: string; email: string; password: string }) {
+export interface RegisterFields {
+  name: string
+  email: string
+  password: string
+  phone?: string
+  organization?: string
+  registrationType: RegistrationType
+  membershipTier?: MembershipTier
+}
+
+export function registerUser(data: RegisterFields) {
   return apiFetch<{ accessToken: string; user: AuthUser }>("/auth/register", {
     method: "POST",
     body: JSON.stringify(data),
@@ -82,7 +101,10 @@ export function getMyProfile(token: string) {
   return apiFetch<MyProfile>("/auth/me", { token })
 }
 
-export function updateMyProfile(token: string, data: { name?: string; phone?: string; address?: string }) {
+export function updateMyProfile(
+  token: string,
+  data: { name?: string; phone?: string; address?: string; organization?: string }
+) {
   return apiFetch<MyProfile>("/auth/me", { method: "PATCH", token, body: JSON.stringify(data) })
 }
 
@@ -292,6 +314,74 @@ export function updatePrivilegeDefaults(token: string, data: Partial<PrivilegeDe
   })
 }
 
+// ── Researchers ──────────────────────────────────────────────────────────────
+
+export type ApplicationStatus = "PENDING" | "APPROVED" | "REJECTED"
+
+export interface ResearcherApplicationFields {
+  name: string
+  email: string
+  organization: string
+  currentRole: string
+  certifications?: string[]
+  expertiseAreas?: string[]
+  bio: string
+  linkedinUrl?: string
+}
+
+export function submitResearcherApplication(data: ResearcherApplicationFields) {
+  return apiFetch<{ id: string }>("/researchers/applications", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+}
+
+export interface MyResearcherApplicationStatus {
+  id: string
+  status: ApplicationStatus
+  appliedAt: string
+  reviewNote?: string
+}
+
+export function getMyResearcherApplication(token: string) {
+  return apiFetch<MyResearcherApplicationStatus | null>("/researchers/applications/me", { token })
+}
+
+export interface ResearcherApplicationRow {
+  id: string
+  initials: string
+  name: string
+  email: string
+  organization: string
+  currentRole: string
+  certifications: string[]
+  expertiseAreas: string[]
+  bio: string
+  linkedinUrl?: string
+  applied: string
+  status: ApplicationStatus
+}
+
+export function getResearcherApplications(token: string, status?: ApplicationStatus) {
+  const query = status ? `?status=${status}` : ""
+  return apiFetch<ResearcherApplicationRow[]>(`/researchers/admin/applications${query}`, { token })
+}
+
+export function approveResearcherApplication(token: string, id: string) {
+  return apiFetch<{ success: boolean }>(`/researchers/admin/applications/${id}/approve`, {
+    method: "PATCH",
+    token,
+  })
+}
+
+export function rejectResearcherApplication(token: string, id: string, reviewNote?: string) {
+  return apiFetch(`/researchers/admin/applications/${id}/reject`, {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ reviewNote }),
+  })
+}
+
 // ── Blogs (public) ────────────────────────────────────────────────────────────
 
 export type BlogStatus = "DRAFT" | "PUBLISHED"
@@ -459,6 +549,32 @@ export function getAdminStats(token: string) {
   return apiFetch<AdminStats>("/admin/stats", { token })
 }
 
+// ── Go-live bulk rollout ─────────────────────────────────────────────────────
+
+export interface GoLiveEntry {
+  name: string
+  email: string
+}
+
+export interface GoLivePreview {
+  newEntries: GoLiveEntry[]
+  alreadyExistsEmails: string[]
+}
+
+export function previewGoLive(token: string, file: File) {
+  const formData = new FormData()
+  formData.append("file", file)
+  return apiFetch<GoLivePreview>("/admin/go-live/preview", { method: "POST", token, body: formData })
+}
+
+export function confirmGoLive(token: string, entries: GoLiveEntry[]) {
+  return apiFetch<{ created: number; skipped: number }>("/admin/go-live/confirm", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ entries }),
+  })
+}
+
 // ── Categories ────────────────────────────────────────────────────────────────
 
 export interface Category {
@@ -495,8 +611,6 @@ export function reorderCategories(token: string, orderedIds: string[]) {
 
 // ── Users ────────────────────────────────────────────────────────────────────
 
-export type UserRole = "ADMIN" | "ALUMNI" | "USER"
-
 export interface AdminUserRow {
   id: string
   name: string
@@ -523,6 +637,31 @@ export interface UpdateUserFields {
 
 export function updateAdminUser(token: string, id: string, data: UpdateUserFields) {
   return apiFetch<AdminUserRow>(`/users/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export interface AlumniCsvPreview {
+  matchedEmails: string[]
+  alreadyAlumniEmails: string[]
+  unmatchedEmails: string[]
+  skippedPrivilegedEmails: string[]
+  pendingNotMatchedEmails: string[]
+}
+
+export function previewAlumniCsv(token: string, file: File) {
+  const formData = new FormData()
+  formData.append("file", file)
+  return apiFetch<AlumniCsvPreview>("/users/admin/alumni-csv/preview", { method: "POST", token, body: formData })
+}
+
+export function confirmAlumniCsv(
+  token: string,
+  data: { matchedEmails: string[]; pendingNotMatchedEmails: string[] }
+) {
+  return apiFetch<{ activated: number; notified: number }>("/users/admin/alumni-csv/confirm", {
+    method: "POST",
+    token,
+    body: JSON.stringify(data),
+  })
 }
 
 // ── Contact ──────────────────────────────────────────────────────────────────

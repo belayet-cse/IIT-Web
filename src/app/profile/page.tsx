@@ -13,6 +13,7 @@ function PersonalInfoCard({ token, profile, onSaved }: { token: string; profile:
   const [name, setName] = useState(profile.name)
   const [phone, setPhone] = useState(profile.phone ?? "")
   const [address, setAddress] = useState(profile.address ?? "")
+  const [organization, setOrganization] = useState(profile.organization ?? "")
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
@@ -22,7 +23,7 @@ function PersonalInfoCard({ token, profile, onSaved }: { token: string; profile:
     setSuccess(false)
     setIsSaving(true)
     try {
-      const updated = await updateMyProfile(token, { name, phone, address })
+      const updated = await updateMyProfile(token, { name, phone, address, organization })
       onSaved(updated)
       setSuccess(true)
     } catch (err) {
@@ -54,10 +55,13 @@ function PersonalInfoCard({ token, profile, onSaved }: { token: string; profile:
         <FormGroup label="Phone Number">
           <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. +880 1XXX-XXXXXX" />
         </FormGroup>
-        <FormGroup label="Address">
-          <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full address" />
+        <FormGroup label="Organization">
+          <Input value={organization} onChange={(e) => setOrganization(e.target.value)} placeholder="e.g. Standard Bank" />
         </FormGroup>
       </div>
+      <FormGroup label="Address">
+        <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full address" />
+      </FormGroup>
       <Button disabled={isSaving} onClick={handleSave}>
         {isSaving ? "Saving…" : "Save Changes"}
       </Button>

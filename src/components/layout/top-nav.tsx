@@ -22,6 +22,7 @@ const defaultLinks: NavLink[] = [
   { label: "Blogs", href: "/blogs" },
   { label: "Events", href: "/events" },
   { label: "Alumni", href: "/alumni" },
+  { label: "Researchers", href: "/researcher" },
   { label: "About Us", href: "/about" },
 ]
 
@@ -53,7 +54,7 @@ export function TopNav({ links = defaultLinks, className }: TopNavProps) {
 
         {status === "authenticated" && session.user ? (
           <div className="flex items-center gap-4">
-            {session.user.role === "USER" && (
+            {session.user.role === "GENERAL" && (
               <Link
                 href="/alumni/apply"
                 className="text-nav text-muted-foreground hover:text-gold transition-colors duration-200"

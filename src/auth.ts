@@ -22,6 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: user.email,
             role: user.role,
             accessToken,
+            mustChangePassword: user.mustChangePassword,
           }
         } catch (error) {
           if (error instanceof ApiError) return null
@@ -30,23 +31,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    // Auto-logout on inactivity: session expires this long after the last
+    // request that touches it; updateAge keeps rolling the expiry forward
+    // while the user stays active.
+    maxAge: 30 * 60,
+    updateAge: 5 * 60,
+  },
   pages: { signIn: "/login" },
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id as string
-        token.role = user.role as "ADMIN" | "ALUMNI" | "USER"
+        token.role = user.role as "ADMIN" | "ALUMNI" | "GENERAL" | "PREMIUM" | "RESEARCHER"
         token.accessToken = user.accessToken as string
+        token.mustChangePassword = user.mustChangePassword as boolean
+      }
+      if (trigger === "update" && session?.mustChangePassword !== undefined) {
+        token.mustChangePassword = session.mustChangePassword as boolean
       }
       return token
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as "ADMIN" | "ALUMNI" | "USER"
+        session.user.role = token.role as "ADMIN" | "ALUMNI" | "GENERAL" | "PREMIUM" | "RESEARCHER"
       }
       session.accessToken = token.accessToken as string
+      session.mustChangePassword = token.mustChangePassword as boolean
       return session
     },
   },

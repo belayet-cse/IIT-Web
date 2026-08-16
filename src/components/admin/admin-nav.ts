@@ -20,11 +20,15 @@ export const adminNavGroups = [
       { label: "Q&A Moderation" },
       { label: "Forum Moderation" },
       { label: "Alumni", href: "/admin/alumni" },
-      { label: "Researchers" },
+      { label: "Researchers", href: "/admin/researchers" },
     ],
   },
   {
     label: "Users",
-    items: [{ label: "All Users", href: "/admin/users" }, { label: "Membership Tiers" }],
+    items: [
+      { label: "All Users", href: "/admin/users" },
+      { label: "Go-Live Tools", href: "/admin/go-live" },
+      { label: "Membership Tiers" },
+    ],
   },
 ]

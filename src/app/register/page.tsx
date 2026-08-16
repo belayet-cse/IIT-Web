@@ -7,7 +7,8 @@ import { AuthLayout } from "@/components/layout/auth-layout"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { ApiError, registerUser } from "@/lib/api"
+import { cn } from "@/lib/utils"
+import { ApiError, registerUser, type MembershipTier, type RegistrationType } from "@/lib/api"
 
 // ── Password strength ─────────────────────────────────────────────────────────
 
@@ -92,32 +93,111 @@ function LeftPanel() {
   )
 }
 
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+
+const TABS: { id: RegistrationType; label: string }[] = [
+  { id: "GENERAL", label: "General Member" },
+  { id: "PREMIUM", label: "Premium Member" },
+  { id: "ALUMNI", label: "Alumni" },
+]
+
+function TabBar({ active, onChange }: { active: RegistrationType; onChange: (t: RegistrationType) => void }) {
+  return (
+    <div className="flex gap-1 mb-7 border-b border-border">
+      {TABS.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          onClick={() => onChange(tab.id)}
+          className={cn(
+            "px-4 py-2.5 text-[13px] font-semibold cursor-pointer border-b-2 border-transparent transition-colors",
+            active === tab.id ? "text-navy" : "text-muted-foreground hover:text-foreground"
+          )}
+          style={active === tab.id ? { borderBottomColor: "var(--gold)" } : undefined}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// ── Premium plan selector ────────────────────────────────────────────────────
+
+const PLANS: { id: MembershipTier; label: string; priceBdt: string; blurb: string }[] = [
+  { id: "BASIC", label: "Basic", priceBdt: "৳2,000/yr", blurb: "Member discounts + directory access" },
+  { id: "PRO", label: "Pro", priceBdt: "৳5,000/yr", blurb: "Everything in Basic + free certifications" },
+  { id: "ELITE", label: "Elite", priceBdt: "৳10,000/yr", blurb: "Everything in Pro + priority event access" },
+]
+
+function PlanSelector({ value, onChange }: { value: MembershipTier; onChange: (t: MembershipTier) => void }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-1">
+      {PLANS.map((plan) => (
+        <button
+          key={plan.id}
+          type="button"
+          onClick={() => onChange(plan.id)}
+          className={cn(
+            "text-left border rounded-lg p-3.5 transition-colors",
+            value === plan.id ? "border-gold bg-gold/5" : "border-border hover:border-gold/40"
+          )}
+        >
+          <div className="text-[13px] font-bold text-navy">{plan.label}</div>
+          <div className="text-[12px] text-gold font-semibold mt-0.5">{plan.priceBdt}</div>
+          <div className="text-[11px] text-muted-foreground mt-1 leading-snug">{plan.blurb}</div>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 // ── Form ──────────────────────────────────────────────────────────────────────
 
 interface FormState {
-  name: string
+  firstName: string
+  lastName: string
   email: string
+  phone: string
+  organization: string
   password: string
   confirmPassword: string
   agreed: boolean
 }
 
 interface FormErrors {
-  name?: string
+  firstName?: string
+  lastName?: string
   email?: string
+  phone?: string
+  organization?: string
   password?: string
   confirmPassword?: string
   agreed?: string
 }
 
+const emptyForm: FormState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  organization: "",
+  password: "",
+  confirmPassword: "",
+  agreed: false,
+}
+
 function validate(form: FormState): FormErrors {
   const errors: FormErrors = {}
-  if (!form.name.trim()) errors.name = "Full name is required."
+  if (!form.firstName.trim()) errors.firstName = "First name is required."
+  if (!form.lastName.trim()) errors.lastName = "Last name is required."
   if (!form.email) {
     errors.email = "Email is required."
   } else if (!/\S+@\S+\.\S+/.test(form.email)) {
     errors.email = "Enter a valid email address."
   }
+  if (!form.phone.trim()) errors.phone = "Phone number is required."
+  if (!form.organization.trim()) errors.organization = "Organization is required."
   if (!form.password) {
     errors.password = "Password is required."
   } else if (form.password.length < 8) {
@@ -133,13 +213,9 @@ function validate(form: FormState): FormErrors {
 }
 
 export default function RegisterPage() {
-  const [form, setForm] = useState<FormState>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreed: false,
-  })
+  const [tab, setTab] = useState<RegistrationType>("GENERAL")
+  const [membershipTier, setMembershipTier] = useState<MembershipTier>("BASIC")
+  const [form, setForm] = useState<FormState>(emptyForm)
   const [errors, setErrors] = useState<FormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -162,7 +238,15 @@ export default function RegisterPage() {
     setFormError("")
     setIsLoading(true)
     try {
-      await registerUser({ name: form.name, email: form.email, password: form.password })
+      await registerUser({
+        name: `${form.firstName.trim()} ${form.lastName.trim()}`.trim(),
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        organization: form.organization,
+        registrationType: tab,
+        membershipTier: tab === "PREMIUM" ? membershipTier : undefined,
+      })
       setSuccess(true)
     } catch (error) {
       setFormError(error instanceof ApiError ? error.message : "Something went wrong. Please try again.")
@@ -179,10 +263,27 @@ export default function RegisterPage() {
             <CheckCircle className="w-8 h-8" style={{ color: "var(--success-text)" }} />
           </div>
           <h2 className="font-heading text-[28px] text-navy mb-3">Account created!</h2>
-          <p className="text-sm text-muted-foreground mb-8 max-w-[340px] mx-auto">
-            We've sent a verification email to{" "}
-            <strong className="text-navy">{form.email}</strong>. Please check your inbox and
-            verify your address to activate your account.
+          <p className="text-sm text-muted-foreground mb-8 max-w-[360px] mx-auto">
+            {tab === "GENERAL" && (
+              <>
+                Your account is ready. Sign in with <strong className="text-navy">{form.email}</strong> to
+                get started.
+              </>
+            )}
+            {tab === "PREMIUM" && (
+              <>
+                You&apos;re signed up with General access for now. Premium checkout is launching soon —
+                we&apos;ll email <strong className="text-navy">{form.email}</strong> to complete payment for the{" "}
+                {PLANS.find((p) => p.id === membershipTier)?.label} plan and activate your Premium benefits.
+              </>
+            )}
+            {tab === "ALUMNI" && (
+              <>
+                Your alumni status is being verified against our records. You have General access in the
+                meantime, and we&apos;ll email <strong className="text-navy">{form.email}</strong> once
+                verification is complete.
+              </>
+            )}
           </p>
           <Link
             href="/login"
@@ -190,15 +291,6 @@ export default function RegisterPage() {
           >
             Go to sign in →
           </Link>
-          <p className="text-[12px] text-muted-foreground mt-4">
-            Didn't receive the email?{" "}
-            <button
-              className="text-gold hover:underline underline-offset-2"
-              onClick={() => setSuccess(false)}
-            >
-              Try again
-            </button>
-          </p>
         </div>
       </AuthLayout>
     )
@@ -210,12 +302,28 @@ export default function RegisterPage() {
         <h1 className="font-heading text-[30px] text-navy leading-tight mb-1.5">
           Create your account
         </h1>
-        <p className="text-sm text-muted-foreground mb-8">
+        <p className="text-sm text-muted-foreground mb-6">
           Already have an account?{" "}
           <Link href="/login" className="text-gold font-semibold hover:underline underline-offset-2">
             Sign in
           </Link>
         </p>
+
+        <TabBar active={tab} onChange={setTab} />
+
+        {tab === "PREMIUM" && (
+          <div className="mb-6">
+            <Label>Choose a plan</Label>
+            <PlanSelector value={membershipTier} onChange={setMembershipTier} />
+          </div>
+        )}
+
+        {tab === "ALUMNI" && (
+          <p className="text-[12.5px] text-muted-foreground bg-muted/60 rounded-lg px-3.5 py-2.5 mb-6">
+            We&apos;ll check your email against our verified alumni records. You&apos;ll have General Member access
+            immediately, upgraded automatically once verification is confirmed.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-5">
@@ -226,24 +334,36 @@ export default function RegisterPage() {
               </p>
             )}
 
-            {/* Full name */}
-            <div>
-              <Label htmlFor="name" required>Full name</Label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" />
-                <Input
-                  id="name"
-                  type="text"
-                  autoComplete="name"
-                  placeholder="e.g. Rafiq Ahmed"
-                  className="pl-10"
-                  value={form.name}
-                  onChange={(e) => set("name", e.target.value)}
-                />
+            {/* First / Last name */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName" required>First name</Label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" />
+                  <Input
+                    id="firstName"
+                    type="text"
+                    autoComplete="given-name"
+                    placeholder="Rafiq"
+                    className="pl-10"
+                    value={form.firstName}
+                    onChange={(e) => set("firstName", e.target.value)}
+                  />
+                </div>
+                {errors.firstName && <p className="text-[12px] text-destructive mt-1.5">{errors.firstName}</p>}
               </div>
-              {errors.name && (
-                <p className="text-[12px] text-destructive mt-1.5">{errors.name}</p>
-              )}
+              <div>
+                <Label htmlFor="lastName" required>Last name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  autoComplete="family-name"
+                  placeholder="Ahmed"
+                  value={form.lastName}
+                  onChange={(e) => set("lastName", e.target.value)}
+                />
+                {errors.lastName && <p className="text-[12px] text-destructive mt-1.5">{errors.lastName}</p>}
+              </div>
             </div>
 
             {/* Email */}
@@ -264,6 +384,35 @@ export default function RegisterPage() {
               {errors.email && (
                 <p className="text-[12px] text-destructive mt-1.5">{errors.email}</p>
               )}
+            </div>
+
+            {/* Phone / Organization */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone" required>Phone</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="+880 1XXX-XXXXXX"
+                  value={form.phone}
+                  onChange={(e) => set("phone", e.target.value)}
+                />
+                {errors.phone && <p className="text-[12px] text-destructive mt-1.5">{errors.phone}</p>}
+              </div>
+              <div>
+                <Label htmlFor="organization" required>Organization</Label>
+                <Input
+                  id="organization"
+                  type="text"
+                  placeholder="e.g. Standard Bank"
+                  value={form.organization}
+                  onChange={(e) => set("organization", e.target.value)}
+                />
+                {errors.organization && (
+                  <p className="text-[12px] text-destructive mt-1.5">{errors.organization}</p>
+                )}
+              </div>
             </div>
 
             {/* Password */}
