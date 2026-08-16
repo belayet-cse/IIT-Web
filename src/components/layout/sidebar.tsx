@@ -55,10 +55,26 @@ export function Sidebar({ navGroups, activeItem, onItemClick, className }: Sideb
               )
             }
 
+            if (onItemClick) {
+              return (
+                <div key={item.label} onClick={() => onItemClick(item.label)} className={itemClassName}>
+                  {item.icon}
+                  {item.label}
+                </div>
+              )
+            }
+
             return (
-              <div key={item.label} onClick={() => onItemClick?.(item.label)} className={itemClassName}>
-                {item.icon}
-                {item.label}
+              <div
+                key={item.label}
+                title="Not available yet"
+                className="flex items-center justify-between gap-[10px] px-[22px] py-[10px] text-nav text-white/35 border-l-[3px] border-transparent cursor-not-allowed"
+              >
+                <span className="flex items-center gap-[10px]">
+                  {item.icon}
+                  {item.label}
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-white/25">Soon</span>
               </div>
             )
           })}
