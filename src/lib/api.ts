@@ -440,9 +440,10 @@ export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED"
 
 export interface Payment {
   id: string
-  type: "MEMBERSHIP" | "BLOG"
+  type: "MEMBERSHIP" | "BLOG" | "RESEARCH"
   membershipTier: MembershipTier | null
   blogId: string | null
+  paperId: string | null
   currency: PaymentCurrency
   amount: number
   status: PaymentStatus
@@ -456,9 +457,10 @@ export interface AdminPaymentRow {
   id: string
   userName: string
   userEmail: string
-  type: "MEMBERSHIP" | "BLOG"
+  type: "MEMBERSHIP" | "BLOG" | "RESEARCH"
   membershipTier: MembershipTier | null
   blogTitle: string | null
+  paperTitle: string | null
   currency: PaymentCurrency
   amount: number
   discountPercent: number
@@ -485,6 +487,14 @@ export function createBlogCheckout(token: string, blogId: string, currency: Paym
     method: "POST",
     token,
     body: JSON.stringify({ type: "BLOG", blogId, currency }),
+  })
+}
+
+export function createResearchCheckout(token: string, paperId: string, currency: PaymentCurrency) {
+  return apiFetch<Payment>("/payments/checkout", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ type: "RESEARCH", paperId, currency }),
   })
 }
 
@@ -650,6 +660,143 @@ export function fileUrl(path?: string | null) {
   if (!path) return undefined
   const base = API_URL.replace(/\/api$/, "")
   return `${base}${path}`
+}
+
+// ── Research Papers (public) ───────────────────────────────────────────────────
+
+export type Certification = "CDCS" | "CSDG" | "CITF" | "CTFP" | "OTHER"
+
+export interface ResearchPaperSummary {
+  title: string
+  slug: string
+  abstract: string
+  featuredImage: string | null
+  category: string | null
+  tags: string[]
+  readingTime: number
+  priceBdt: number
+  priceUsd: number
+  certification: Certification | null
+  views: number
+  author: string
+  publishedAt: string | null
+}
+
+export interface ResearchPaperListResult {
+  data: ResearchPaperSummary[]
+  meta: { page: number; limit: number; total: number; totalPages: number }
+}
+
+export interface PublicResearchPaperDetail {
+  id: string
+  title: string
+  slug: string
+  abstract: string
+  content: string | null
+  locked: boolean
+  featuredImage: string | null
+  category: string | null
+  tags: string[]
+  readingTime: number
+  priceBdt: number
+  priceUsd: number
+  certification: Certification | null
+  discountPercent: number
+  views: number
+  author: string
+  publishedAt: string | null
+}
+
+export function getResearchPapers(params: { search?: string; category?: string; page?: number; limit?: number } = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v).map(([k, v]) => [k, String(v)])
+  ).toString()
+  return apiFetch<ResearchPaperListResult>(`/research${query ? `?${query}` : ""}`)
+}
+
+export function getResearchPaperBySlug(slug: string, token?: string) {
+  return apiFetch<PublicResearchPaperDetail>(`/research/${slug}`, { token })
+}
+
+// ── Research Papers (admin) ─────────────────────────────────────────────────────
+
+export interface AdminResearchPaperRow {
+  id: string
+  title: string
+  slug: string
+  featuredImage: string | null
+  category: string | null
+  tags: string[]
+  status: BlogStatus
+  priceBdt: number
+  priceUsd: number
+  views: number
+  readingTime: number
+  author: string
+  publishedAt: string | null
+  updatedAt: string
+}
+
+export interface ResearchPaperDetail {
+  id: string
+  title: string
+  slug: string
+  abstract: string
+  content: string
+  featuredImage: string | null
+  category: string | null
+  tags: string[]
+  status: BlogStatus
+  priceBdt: number
+  priceUsd: number
+  certification: Certification | null
+  readingTime: number
+  views: number
+  authorId: string
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ResearchPaperFormFields {
+  title: string
+  slug?: string
+  abstract: string
+  content: string
+  featuredImage?: string
+  category?: string
+  tags?: string[]
+  status?: BlogStatus
+  priceBdt?: number
+  priceUsd?: number
+  certification?: Certification
+  readingTime?: number
+}
+
+export function getAdminResearchPapers(
+  token: string,
+  params: { search?: string; status?: BlogStatus; category?: string } = {}
+) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v) as [string, string][]
+  ).toString()
+  return apiFetch<AdminResearchPaperRow[]>(`/research/admin${query ? `?${query}` : ""}`, { token })
+}
+
+export function getAdminResearchPaper(token: string, id: string) {
+  return apiFetch<ResearchPaperDetail>(`/research/admin/${id}`, { token })
+}
+
+export function createResearchPaper(token: string, data: ResearchPaperFormFields) {
+  return apiFetch<ResearchPaperDetail>("/research/admin", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function updateResearchPaper(token: string, id: string, data: Partial<ResearchPaperFormFields>) {
+  return apiFetch<ResearchPaperDetail>(`/research/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deleteResearchPaper(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/research/admin/${id}`, { method: "DELETE", token })
 }
 
 // ── Forum ────────────────────────────────────────────────────────────────────

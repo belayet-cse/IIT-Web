@@ -9,7 +9,7 @@ export const adminNavGroups = [
       { label: "Blog Posts", href: "/admin/blogs" },
       { label: "Categories", href: "/admin/categories" },
       { label: "Certifications" },
-      { label: "Research Papers" },
+      { label: "Research Papers", href: "/admin/research" },
       { label: "Events" },
       { label: "Facilitations" },
     ],

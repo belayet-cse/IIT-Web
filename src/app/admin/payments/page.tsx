@@ -30,7 +30,9 @@ function formatAmount(row: AdminPaymentRow) {
 }
 
 function describeItem(row: AdminPaymentRow) {
-  return row.type === "BLOG" ? (row.blogTitle ?? "Blog post") : row.membershipTier
+  if (row.type === "BLOG") return row.blogTitle ?? "Blog post"
+  if (row.type === "RESEARCH") return row.paperTitle ?? "Research paper"
+  return row.membershipTier
 }
 
 function MarkPaidModal({
@@ -71,7 +73,10 @@ function MarkPaidModal({
         <h3 className="font-heading text-[19px] text-navy mb-1">Mark payment as paid</h3>
         <p className="text-[13px] text-muted-foreground mb-4">
           {row.userName} — {formatAmount(row)} for {describeItem(row)}. This immediately{" "}
-          {row.type === "BLOG" ? "unlocks the post for them" : "activates their Premium membership"}.
+          {row.type === "BLOG" || row.type === "RESEARCH"
+            ? "unlocks it for them"
+            : "activates their Premium membership"}
+          .
         </p>
         {error && (
           <p className="text-[13px] text-destructive bg-destructive/10 rounded-lg px-3.5 py-2.5 mb-4">{error}</p>
@@ -85,7 +90,11 @@ function MarkPaidModal({
         />
         <div className="flex gap-2">
           <Button className="flex-1" disabled={isSaving} onClick={handleConfirm}>
-            {isSaving ? "Confirming…" : row.type === "BLOG" ? "Confirm & Unlock Post" : "Confirm & Activate Membership"}
+            {isSaving
+              ? "Confirming…"
+              : row.type === "BLOG" || row.type === "RESEARCH"
+                ? "Confirm & Unlock"
+                : "Confirm & Activate Membership"}
           </Button>
           <Button variant="outline" onClick={onClose}>
             Cancel
