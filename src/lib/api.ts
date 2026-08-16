@@ -652,6 +652,111 @@ export function fileUrl(path?: string | null) {
   return `${base}${path}`
 }
 
+// ── Forum ────────────────────────────────────────────────────────────────────
+
+export interface ForumThreadSummary {
+  id: string
+  title: string
+  category: string | null
+  author: string
+  pinned: boolean
+  locked: boolean
+  replyCount: number
+  views: number
+  lastActivityAt: string
+  createdAt: string
+}
+
+export interface ForumThreadListResult {
+  data: ForumThreadSummary[]
+  meta: { page: number; limit: number; total: number; totalPages: number }
+}
+
+export interface ForumReply {
+  id: string
+  content: string
+  author: string
+  createdAt: string
+}
+
+export interface ForumThreadDetail {
+  id: string
+  title: string
+  content: string
+  category: string | null
+  author: string
+  pinned: boolean
+  locked: boolean
+  replyCount: number
+  views: number
+  lastActivityAt: string
+  createdAt: string
+  replies: ForumReply[]
+}
+
+export function getForumThreads(
+  token: string,
+  params: { category?: string; page?: number; limit?: number } = {}
+) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v).map(([k, v]) => [k, String(v)])
+  ).toString()
+  return apiFetch<ForumThreadListResult>(`/forum/threads${query ? `?${query}` : ""}`, { token })
+}
+
+export function getForumThread(token: string, id: string) {
+  return apiFetch<ForumThreadDetail>(`/forum/threads/${id}`, { token })
+}
+
+export function createForumThread(token: string, data: { title: string; content: string; category?: string }) {
+  return apiFetch<{ id: string }>("/forum/threads", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function createForumReply(token: string, threadId: string, content: string) {
+  return apiFetch<{ id: string }>(`/forum/threads/${threadId}/replies`, {
+    method: "POST",
+    token,
+    body: JSON.stringify({ content }),
+  })
+}
+
+export interface AdminForumThreadRow {
+  id: string
+  title: string
+  category: string | null
+  authorName: string
+  authorEmail: string
+  pinned: boolean
+  locked: boolean
+  replyCount: number
+  views: number
+  createdAt: string
+  lastActivityAt: string
+}
+
+export function getAdminForumThreads(token: string, params: { search?: string; category?: string } = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v) as [string, string][]
+  ).toString()
+  return apiFetch<AdminForumThreadRow[]>(`/forum/admin/threads${query ? `?${query}` : ""}`, { token })
+}
+
+export function updateForumThread(token: string, id: string, data: { pinned?: boolean; locked?: boolean }) {
+  return apiFetch<AdminForumThreadRow>(`/forum/admin/threads/${id}`, {
+    method: "PATCH",
+    token,
+    body: JSON.stringify(data),
+  })
+}
+
+export function deleteForumThread(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/forum/admin/threads/${id}`, { method: "DELETE", token })
+}
+
+export function deleteForumPost(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/forum/admin/posts/${id}`, { method: "DELETE", token })
+}
+
 // ── Admin dashboard ───────────────────────────────────────────────────────────
 
 export interface AdminStats {

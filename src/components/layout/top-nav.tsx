@@ -22,6 +22,7 @@ const defaultLinks: NavLink[] = [
   { label: "Blogs", href: "/blogs" },
   { label: "Events", href: "/events" },
   { label: "Alumni", href: "/alumni" },
+  { label: "Forum", href: "/forum" },
   { label: "Researchers", href: "/researcher" },
   { label: "About Us", href: "/about" },
 ]

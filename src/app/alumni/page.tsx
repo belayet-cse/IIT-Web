@@ -276,7 +276,7 @@ export default function AlumniPage() {
                   title="Alumni Discussion Forum"
                   description="Start a topic or join ongoing discussions with fellow alumni — market insight, career moves, mentorship requests, and more."
                   buttonLabel="Enter Discussion Forum"
-                  buttonHref="/alumni/forum"
+                  buttonHref="/forum"
                 />
               </div>
             </section>

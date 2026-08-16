@@ -18,7 +18,7 @@ export const adminNavGroups = [
     label: "Community",
     items: [
       { label: "Q&A Moderation" },
-      { label: "Forum Moderation" },
+      { label: "Forum Moderation", href: "/admin/forum" },
       { label: "Alumni", href: "/admin/alumni" },
       { label: "Researchers", href: "/admin/researchers" },
     ],
