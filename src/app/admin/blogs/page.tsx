@@ -292,7 +292,8 @@ const emptyForm: BlogFormFields = {
   metaDescription: "",
   category: "",
   status: "DRAFT",
-  price: 0,
+  priceBdt: 0,
+  priceUsd: 0,
   readingTime: undefined,
 }
 
@@ -426,7 +427,8 @@ function EditorTab({
           metaDescription: post.metaDescription ?? "",
           category: post.category ?? "",
           status: post.status,
-          price: post.price,
+          priceBdt: post.priceBdt,
+          priceUsd: post.priceUsd,
           readingTime: post.readingTime,
         })
         setTagsInput(post.tags.join(", "))
@@ -506,7 +508,7 @@ function EditorTab({
           <FeaturedImageField value={form.featuredImage ?? ""} onChange={(dataUrl) => set("featuredImage", dataUrl)} />
         </FormGroup>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormGroup label="Category">
             <Select value={form.category} onChange={(e) => set("category", e.target.value)}>
               <option value="">Select category…</option>
@@ -520,12 +522,23 @@ function EditorTab({
           <FormGroup label="Tags (Optional)">
             <Input placeholder="comma, separated, tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
           </FormGroup>
-          <FormGroup label="Price">
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormGroup label="Price (BDT)" hint="0 = free for everyone, readable without an account.">
             <Input
               type="number"
               min={0}
-              value={form.price ?? 0}
-              onChange={(e) => set("price", e.target.value ? Number(e.target.value) : 0)}
+              value={form.priceBdt ?? 0}
+              onChange={(e) => set("priceBdt", e.target.value ? Number(e.target.value) : 0)}
+            />
+          </FormGroup>
+          <FormGroup label="Price (USD)" hint="0 = free for everyone, readable without an account.">
+            <Input
+              type="number"
+              min={0}
+              value={form.priceUsd ?? 0}
+              onChange={(e) => set("priceUsd", e.target.value ? Number(e.target.value) : 0)}
             />
           </FormGroup>
         </div>

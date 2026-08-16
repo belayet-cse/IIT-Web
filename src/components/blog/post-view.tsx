@@ -8,12 +8,15 @@ export interface PostViewProps {
   readingTime: number
   publishedAt?: string | Date | null
   featuredImage?: string | null
-  content: string
+  content: string | null
   showBackLink?: boolean
+  /** Rendered in place of the article body when the post is gated (content is null). */
+  lockedContent?: React.ReactNode
 }
 
 // Shared between the public post page and the admin "Preview" modal so the
 // two render identically — the writer sees exactly what a reader would see.
+// Preview always passes full content, so `lockedContent` never applies there.
 export function PostView({
   title,
   category,
@@ -23,9 +26,10 @@ export function PostView({
   featuredImage,
   content,
   showBackLink = true,
+  lockedContent,
 }: PostViewProps) {
-  const isHtml = /<\/?[a-z][\s\S]*>/i.test(content)
-  const paragraphs = isHtml ? [] : content.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
+  const isHtml = !!content && /<\/?[a-z][\s\S]*>/i.test(content)
+  const paragraphs = content && !isHtml ? content.split(/\n\n+/).map((p) => p.trim()).filter(Boolean) : []
 
   return (
     <>
@@ -72,7 +76,9 @@ export function PostView({
 
       <article className="py-16">
         <div className="max-w-[720px] mx-auto px-6">
-          {isHtml ? (
+          {content === null ? (
+            lockedContent
+          ) : isHtml ? (
             <div className="rich-content text-[16px] text-foreground" dangerouslySetInnerHTML={{ __html: content }} />
           ) : (
             paragraphs.map((paragraph, i) => (

@@ -22,7 +22,15 @@ function StatusBadge({ status }: { status: PaymentStatus }) {
 
 function formatAmount(row: AdminPaymentRow) {
   const symbol = row.currency === "BDT" ? "৳" : "$"
+  if (row.discountPercent > 0) {
+    const finalAmount = Math.round(row.amount * (1 - row.discountPercent / 100))
+    return `${symbol}${finalAmount.toLocaleString()} (${row.discountPercent}% off ${symbol}${row.amount.toLocaleString()})`
+  }
   return `${symbol}${row.amount.toLocaleString()}`
+}
+
+function describeItem(row: AdminPaymentRow) {
+  return row.type === "BLOG" ? (row.blogTitle ?? "Blog post") : row.membershipTier
 }
 
 function MarkPaidModal({
@@ -62,8 +70,8 @@ function MarkPaidModal({
       >
         <h3 className="font-heading text-[19px] text-navy mb-1">Mark payment as paid</h3>
         <p className="text-[13px] text-muted-foreground mb-4">
-          {row.userName} — {formatAmount(row)} for {row.membershipTier}. This immediately activates their Premium
-          membership.
+          {row.userName} — {formatAmount(row)} for {describeItem(row)}. This immediately{" "}
+          {row.type === "BLOG" ? "unlocks the post for them" : "activates their Premium membership"}.
         </p>
         {error && (
           <p className="text-[13px] text-destructive bg-destructive/10 rounded-lg px-3.5 py-2.5 mb-4">{error}</p>
@@ -77,7 +85,7 @@ function MarkPaidModal({
         />
         <div className="flex gap-2">
           <Button className="flex-1" disabled={isSaving} onClick={handleConfirm}>
-            {isSaving ? "Confirming…" : "Confirm & Activate Membership"}
+            {isSaving ? "Confirming…" : row.type === "BLOG" ? "Confirm & Unlock Post" : "Confirm & Activate Membership"}
           </Button>
           <Button variant="outline" onClick={onClose}>
             Cancel
@@ -149,8 +157,9 @@ export default function AdminPaymentsPage() {
 
       <div className="p-8 flex-1">
         <p className="text-[13px] text-muted-foreground mb-6 max-w-[640px]">
-          Online payment isn&apos;t live yet, so members who choose a plan land here as pending orders. Once you&apos;ve
-          received payment out of band (e.g. bank transfer), mark it as paid to activate their Premium membership.
+          Online payment isn&apos;t live yet, so members who choose a membership plan or unlock a paid post land here
+          as pending orders. Once you&apos;ve received payment out of band (e.g. bank transfer), mark it as paid to
+          grant access.
         </p>
 
         <div className="flex justify-between items-center mb-4">
@@ -183,7 +192,7 @@ export default function AdminPaymentsPage() {
                   </div>
                 ),
               },
-              { key: "membershipTier", header: "Plan" },
+              { key: "item", header: "Item", render: (row) => describeItem(row) },
               { key: "amount", header: "Amount", render: (row) => formatAmount(row) },
               {
                 key: "gateway",

@@ -440,24 +440,28 @@ export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED"
 
 export interface Payment {
   id: string
-  type: "MEMBERSHIP"
+  type: "MEMBERSHIP" | "BLOG"
   membershipTier: MembershipTier | null
+  blogId: string | null
   currency: PaymentCurrency
   amount: number
   status: PaymentStatus
   message: string
   checkoutUrl: string | null
   live: boolean
+  finalPrice?: number
 }
 
 export interface AdminPaymentRow {
   id: string
   userName: string
   userEmail: string
-  type: "MEMBERSHIP"
+  type: "MEMBERSHIP" | "BLOG"
   membershipTier: MembershipTier | null
+  blogTitle: string | null
   currency: PaymentCurrency
   amount: number
+  discountPercent: number
   gateway: PaymentGateway | null
   status: PaymentStatus
   note: string | null
@@ -473,6 +477,14 @@ export function createCheckout(token: string, membershipTier: MembershipTier, cu
     method: "POST",
     token,
     body: JSON.stringify({ type: "MEMBERSHIP", membershipTier, currency }),
+  })
+}
+
+export function createBlogCheckout(token: string, blogId: string, currency: PaymentCurrency) {
+  return apiFetch<Payment>("/payments/checkout", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ type: "BLOG", blogId, currency }),
   })
 }
 
@@ -500,7 +512,8 @@ export interface BlogSummary {
   category: string | null
   tags: string[]
   readingTime: number
-  price: number
+  priceBdt: number
+  priceUsd: number
   views: number
   author: string
   publishedAt: string | null
@@ -512,17 +525,21 @@ export interface BlogListResult {
 }
 
 export interface PublicBlogDetail {
+  id: string
   title: string
   slug: string
   excerpt: string | null
-  content: string
+  content: string | null
+  locked: boolean
   featuredImage: string | null
   metaTitle: string | null
   metaDescription: string | null
   category: string | null
   tags: string[]
   readingTime: number
-  price: number
+  priceBdt: number
+  priceUsd: number
+  discountPercent: number
   views: number
   author: string
   publishedAt: string | null
@@ -535,8 +552,8 @@ export function getBlogs(params: { search?: string; category?: string; page?: nu
   return apiFetch<BlogListResult>(`/blogs${query ? `?${query}` : ""}`)
 }
 
-export function getBlogBySlug(slug: string) {
-  return apiFetch<PublicBlogDetail>(`/blogs/${slug}`)
+export function getBlogBySlug(slug: string, token?: string) {
+  return apiFetch<PublicBlogDetail>(`/blogs/${slug}`, { token })
 }
 
 // ── Blogs (admin) ─────────────────────────────────────────────────────────────
@@ -569,7 +586,8 @@ export interface BlogDetail {
   category: string | null
   tags: string[]
   status: BlogStatus
-  price: number
+  priceBdt: number
+  priceUsd: number
   readingTime: number
   views: number
   authorId: string
@@ -589,7 +607,8 @@ export interface BlogFormFields {
   category?: string
   tags?: string[]
   status?: BlogStatus
-  price?: number
+  priceBdt?: number
+  priceUsd?: number
   readingTime?: number
 }
 

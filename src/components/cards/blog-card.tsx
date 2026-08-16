@@ -6,9 +6,14 @@ interface BlogCardProps extends BlogSummary {
   className?: string
 }
 
-export function BlogCard({ title, slug, excerpt, featuredImage, category, readingTime, author, publishedAt, className }: BlogCardProps) {
+export function BlogCard({ title, slug, excerpt, featuredImage, category, readingTime, priceBdt, author, publishedAt, className }: BlogCardProps) {
   return (
-    <Link href={`/blogs/${slug}`} className={cn("group block bg-card border border-border rounded-xl overflow-hidden hover:border-gold/50 hover:-translate-y-1 transition-all", className)}>
+    <Link href={`/blogs/${slug}`} className={cn("group relative block bg-card border border-border rounded-xl overflow-hidden hover:border-gold/50 hover:-translate-y-1 transition-all", className)}>
+      {priceBdt > 0 && (
+        <span className="absolute top-3 right-3 z-10 bg-navy text-white text-[11px] font-semibold px-2.5 py-1 rounded-full">
+          🔒 Members
+        </span>
+      )}
       {featuredImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={featuredImage} alt="" className="w-full h-40 object-cover" />
