@@ -1,7 +1,7 @@
 export const adminNavGroups = [
   {
     label: "Overview",
-    items: [{ label: "Dashboard", href: "/admin" }, { label: "Analytics" }],
+    items: [{ label: "Dashboard", href: "/admin" }, { label: "Analytics", href: "/admin/analytics" }],
   },
   {
     label: "Content",
@@ -10,14 +10,13 @@ export const adminNavGroups = [
       { label: "Categories", href: "/admin/categories" },
       { label: "Certifications", href: "/admin/programs" },
       { label: "Research Papers", href: "/admin/research" },
-      { label: "Events" },
-      { label: "Facilitations" },
+      { label: "Events", href: "/admin/events" },
+      { label: "Partners", href: "/admin/partners" },
     ],
   },
   {
     label: "Community",
     items: [
-      { label: "Q&A Moderation" },
       { label: "Forum Moderation", href: "/admin/forum" },
       { label: "Alumni", href: "/admin/alumni" },
       { label: "Researchers", href: "/admin/researchers" },

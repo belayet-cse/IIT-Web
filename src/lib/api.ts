@@ -994,6 +994,158 @@ export function deleteProgram(token: string, id: string) {
   return apiFetch<{ id: string }>(`/programs/admin/${id}`, { method: "DELETE", token })
 }
 
+// ── Events (public) ────────────────────────────────────────────────────────────
+
+export type EventFormat = "IN_PERSON" | "VIRTUAL" | "HYBRID"
+
+export interface EventSummary {
+  title: string
+  slug: string
+  description: string
+  startAt: string
+  location: string | null
+  format: EventFormat
+  featuredImage: string | null
+  featured: boolean
+  author: string
+}
+
+export interface EventListResult {
+  data: EventSummary[]
+  meta: { page: number; limit: number; total: number; totalPages: number }
+}
+
+export function getEvents(
+  params: { when?: "upcoming" | "past"; featured?: boolean; page?: number; limit?: number } = {}
+) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== false).map(([k, v]) => [k, String(v)])
+  ).toString()
+  return apiFetch<EventListResult>(`/events${query ? `?${query}` : ""}`)
+}
+
+export function getEventBySlug(slug: string) {
+  return apiFetch<EventSummary>(`/events/${slug}`)
+}
+
+// ── Events (admin) ────────────────────────────────────────────────────────────
+
+export interface AdminEventRow {
+  id: string
+  title: string
+  slug: string
+  startAt: string
+  location: string | null
+  format: EventFormat
+  featured: boolean
+  status: BlogStatus
+  author: string
+  updatedAt: string
+}
+
+export interface EventDetail {
+  id: string
+  title: string
+  slug: string
+  description: string
+  startAt: string
+  location: string | null
+  format: EventFormat
+  featuredImage: string | null
+  featured: boolean
+  status: BlogStatus
+  authorId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface EventFormFields {
+  title: string
+  slug?: string
+  description: string
+  startAt: string
+  location?: string
+  format?: EventFormat
+  featuredImage?: string
+  featured?: boolean
+  status?: BlogStatus
+}
+
+export function getAdminEvents(token: string, params: { search?: string; status?: BlogStatus } = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v) as [string, string][]
+  ).toString()
+  return apiFetch<AdminEventRow[]>(`/events/admin${query ? `?${query}` : ""}`, { token })
+}
+
+export function getAdminEvent(token: string, id: string) {
+  return apiFetch<EventDetail>(`/events/admin/${id}`, { token })
+}
+
+export function createEvent(token: string, data: EventFormFields) {
+  return apiFetch<EventDetail>("/events/admin", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function updateEvent(token: string, id: string, data: Partial<EventFormFields>) {
+  return apiFetch<EventDetail>(`/events/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deleteEvent(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/events/admin/${id}`, { method: "DELETE", token })
+}
+
+// ── Partners ─────────────────────────────────────────────────────────────────
+
+export interface Partner {
+  id: string
+  name: string
+  logoUrl: string
+  websiteUrl: string | null
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}
+
+export function getPartners() {
+  return apiFetch<Partner[]>("/partners")
+}
+
+export function createPartner(token: string, data: { name: string; logoUrl: string; websiteUrl?: string }) {
+  return apiFetch<Partner>("/partners/admin", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function updatePartner(
+  token: string,
+  id: string,
+  data: Partial<{ name: string; logoUrl: string; websiteUrl: string }>
+) {
+  return apiFetch<Partner>(`/partners/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deletePartner(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/partners/admin/${id}`, { method: "DELETE", token })
+}
+
+export function reorderPartners(token: string, orderedIds: string[]) {
+  return apiFetch<Partner[]>("/partners/admin/reorder", {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ orderedIds }),
+  })
+}
+
+// ── Analytics ────────────────────────────────────────────────────────────────
+
+export interface AdminAnalytics {
+  viewsByDay: { date: string; count: number }[]
+  topBlogs: { title: string; slug: string; views: number }[]
+  topResearch: { title: string; slug: string; views: number }[]
+}
+
+export function getAdminAnalytics(token: string) {
+  return apiFetch<AdminAnalytics>("/admin/analytics", { token })
+}
+
 // ── Forum ────────────────────────────────────────────────────────────────────
 
 export interface ForumThreadSummary {

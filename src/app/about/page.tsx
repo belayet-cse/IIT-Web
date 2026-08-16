@@ -2,6 +2,7 @@ import Link from "next/link"
 import { TopNav } from "@/components/layout/top-nav"
 import { Footer } from "@/components/layout/footer"
 import { SectionHeader } from "@/components/shared/section-header"
+import { PartnersSection } from "@/components/about/partners-section"
 
 const missionPoints = [
   "Promoting high-quality education and training in international trade",
@@ -108,6 +109,9 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Partners & Collaborators */}
+        <PartnersSection />
 
         {/* CTA Banner */}
         <section

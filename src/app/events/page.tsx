@@ -3,6 +3,7 @@ import { TopNav } from "@/components/layout/top-nav"
 import { Footer } from "@/components/layout/footer"
 import { SectionHeader } from "@/components/shared/section-header"
 import { EventsTabs } from "@/components/events/events-tabs"
+import { FeaturedEventSection } from "@/components/events/featured-event"
 
 const whyAttend = [
   {
@@ -67,44 +68,7 @@ export default function EventsPage() {
         </section>
 
         {/* Featured Event */}
-        <section className="py-16 bg-card">
-          <div className="max-w-[1180px] mx-auto px-8">
-            <SectionHeader eyebrow="Featured Event" title="Don't Miss Our Flagship Conference of the Year" className="mb-10" />
-            <div className="bg-background border border-border rounded-xl overflow-hidden max-w-[880px] mx-auto md:grid md:grid-cols-2">
-              <div
-                className="h-[220px] md:h-full bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url(https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)",
-                }}
-              />
-              <div className="p-8">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="bg-gold/15 text-gold text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
-                    Featured
-                  </span>
-                  <span className="text-[12.5px] text-muted-foreground">August 1, 2025</span>
-                </div>
-                <h3 className="font-heading text-[22px] text-navy mb-2">
-                  Inauguration Ceremony of Institute of International Trade
-                </h3>
-                <p className="text-[13px] text-muted-foreground mb-4">Dhaka + Virtual</p>
-                <p className="text-sm text-muted-foreground mb-5">
-                  The Inauguration Ceremony of the Institute of International Trade celebrates its official
-                  launch as a hub for trade-related education, policy research, and industry collaboration.
-                  Distinguished guests, academicians, and professionals will gather to outline its vision for
-                  strengthening global trade capacity.
-                </p>
-                <ul className="text-[12.5px] text-muted-foreground space-y-1.5">
-                  <li>👥 Expected attendees: 10+</li>
-                  <li>🌐 Hybrid format (In-person & Virtual)</li>
-                  <li>🗓️ 1-day, 1 session</li>
-                  <li>🎥 Recordings available for attendees</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
+        <FeaturedEventSection />
 
         {/* Upcoming / Past Events */}
         <section className="py-16 bg-background">
