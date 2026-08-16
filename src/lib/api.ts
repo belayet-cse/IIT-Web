@@ -432,6 +432,62 @@ export function runMembershipExpiryCheck(token: string) {
   })
 }
 
+// ── Payments ─────────────────────────────────────────────────────────────────
+
+export type PaymentCurrency = "BDT" | "USD"
+export type PaymentGateway = "SSLCOMMERZ" | "STRIPE" | "MANUAL"
+export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED"
+
+export interface Payment {
+  id: string
+  type: "MEMBERSHIP"
+  membershipTier: MembershipTier | null
+  currency: PaymentCurrency
+  amount: number
+  status: PaymentStatus
+  message: string
+  checkoutUrl: string | null
+  live: boolean
+}
+
+export interface AdminPaymentRow {
+  id: string
+  userName: string
+  userEmail: string
+  type: "MEMBERSHIP"
+  membershipTier: MembershipTier | null
+  currency: PaymentCurrency
+  amount: number
+  gateway: PaymentGateway | null
+  status: PaymentStatus
+  note: string | null
+  createdAt: string
+}
+
+export function getSuggestedCurrency() {
+  return apiFetch<{ currency: PaymentCurrency }>("/payments/suggested-currency")
+}
+
+export function createCheckout(token: string, membershipTier: MembershipTier, currency: PaymentCurrency) {
+  return apiFetch<Payment>("/payments/checkout", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ type: "MEMBERSHIP", membershipTier, currency }),
+  })
+}
+
+export function getAdminPayments(token: string, status?: PaymentStatus) {
+  return apiFetch<AdminPaymentRow[]>(`/payments/admin${status ? `?status=${status}` : ""}`, { token })
+}
+
+export function markPaymentPaid(token: string, id: string, note?: string) {
+  return apiFetch<{ success: boolean }>(`/payments/admin/${id}/mark-paid`, {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ note }),
+  })
+}
+
 // ── Blogs (public) ────────────────────────────────────────────────────────────
 
 export type BlogStatus = "DRAFT" | "PUBLISHED"

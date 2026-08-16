@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
   ApiError,
-  expressMembershipInterest,
+  createCheckout,
   getMembershipPlans,
+  getSuggestedCurrency,
   type MembershipPlan,
   type MembershipTier,
+  type PaymentCurrency,
 } from "@/lib/api"
 
 const BLURBS: Record<MembershipTier, string[]> = {
@@ -23,15 +25,20 @@ const BLURBS: Record<MembershipTier, string[]> = {
 
 function PlanCard({
   plan,
+  currency,
   isCurrent,
   onChoose,
   isBusy,
 }: {
   plan: MembershipPlan
+  currency: PaymentCurrency
   isCurrent: boolean
   onChoose: () => void
   isBusy: boolean
 }) {
+  const primaryPrice = currency === "BDT" ? `৳${plan.priceBdt.toLocaleString()}` : `$${plan.priceUsd}`
+  const secondaryPrice = currency === "BDT" ? `$${plan.priceUsd}` : `৳${plan.priceBdt.toLocaleString()}`
+
   return (
     <div
       className={cn(
@@ -44,10 +51,10 @@ function PlanCard({
       )}
       <h3 className="font-heading text-[22px] text-navy mb-1">{plan.displayName}</h3>
       <div className="text-[28px] font-bold text-navy mb-1">
-        ৳{plan.priceBdt.toLocaleString()}
+        {primaryPrice}
         <span className="text-[13px] font-normal text-muted-foreground">/yr</span>
       </div>
-      <div className="text-[13px] text-muted-foreground mb-4">or ${plan.priceUsd}/yr</div>
+      <div className="text-[13px] text-muted-foreground mb-4">or {secondaryPrice}/yr</div>
       <div className="text-[12.5px] text-gold font-semibold mb-6">{plan.discountPercent}% member discount</div>
       <ul className="space-y-2.5 mb-8 flex-1">
         {BLURBS[plan.tier].map((b) => (
@@ -77,6 +84,7 @@ export default function MembershipPage() {
 
   const [plans, setPlans] = useState<MembershipPlan[]>([])
   const [loading, setLoading] = useState(true)
+  const [currency, setCurrency] = useState<PaymentCurrency>("USD")
   const [busyTier, setBusyTier] = useState<MembershipTier | null>(null)
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
@@ -86,6 +94,9 @@ export default function MembershipPage() {
       .then(setPlans)
       .catch(() => {})
       .finally(() => setLoading(false))
+    getSuggestedCurrency()
+      .then((res) => setCurrency(res.currency))
+      .catch(() => {})
   }, [])
 
   async function handleChoose(tier: MembershipTier) {
@@ -94,10 +105,8 @@ export default function MembershipPage() {
     setMessage("")
     setBusyTier(tier)
     try {
-      await expressMembershipInterest(token, tier)
-      setMessage(
-        `Thanks! We've recorded your interest in the ${tier.charAt(0) + tier.slice(1).toLowerCase()} plan — our team will follow up to complete payment and activate your Premium benefits.`
-      )
+      const result = await createCheckout(token, tier, currency)
+      setMessage(result.message)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.")
     } finally {
@@ -146,6 +155,25 @@ export default function MembershipPage() {
               </p>
             )}
 
+            {!loading && (
+              <div className="flex justify-center mb-8">
+                <div className="inline-flex bg-background border border-border rounded-lg p-1">
+                  {(["BDT", "USD"] as const).map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setCurrency(c)}
+                      className={cn(
+                        "px-4 py-1.5 rounded-md text-[13px] font-semibold transition-colors",
+                        currency === c ? "bg-navy text-white" : "text-muted-foreground hover:text-navy"
+                      )}
+                    >
+                      {c === "BDT" ? "৳ BDT" : "$ USD"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {loading ? (
               <p className="text-sm text-muted-foreground text-center py-10">Loading…</p>
             ) : (
@@ -154,6 +182,7 @@ export default function MembershipPage() {
                   <PlanCard
                     key={plan.tier}
                     plan={plan}
+                    currency={currency}
                     isCurrent={currentTier === plan.tier}
                     isBusy={busyTier === plan.tier}
                     onChoose={() => (token ? handleChoose(plan.tier) : undefined)}

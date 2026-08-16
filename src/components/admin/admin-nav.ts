@@ -29,6 +29,7 @@ export const adminNavGroups = [
       { label: "All Users", href: "/admin/users" },
       { label: "Go-Live Tools", href: "/admin/go-live" },
       { label: "Membership Tiers", href: "/admin/membership" },
+      { label: "Payments", href: "/admin/payments" },
     ],
   },
 ]
