@@ -41,6 +41,10 @@ function ResearchPaywall({ paper, token }: { paper: PublicResearchPaperDetail; t
     setMessage("")
     try {
       const result = await createResearchCheckout(token, paper.id, currency)
+      if (result.live && result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl)
+        return
+      }
       setMessage(result.message)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.")

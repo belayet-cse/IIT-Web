@@ -63,6 +63,10 @@ function EnrollAction({
     setMessage("")
     try {
       const result = await createProgramCheckout(token, program.id, currency)
+      if (result.live && result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl)
+        return
+      }
       setMessage(result.message)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.")

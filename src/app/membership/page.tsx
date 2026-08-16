@@ -106,6 +106,10 @@ export default function MembershipPage() {
     setBusyTier(tier)
     try {
       const result = await createCheckout(token, tier, currency)
+      if (result.live && result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl)
+        return
+      }
       setMessage(result.message)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.")

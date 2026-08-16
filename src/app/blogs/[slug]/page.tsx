@@ -41,6 +41,10 @@ function BlogPaywall({ post, token }: { post: PublicBlogDetail; token?: string }
     setMessage("")
     try {
       const result = await createBlogCheckout(token, post.id, currency)
+      if (result.live && result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl)
+        return
+      }
       setMessage(result.message)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.")
