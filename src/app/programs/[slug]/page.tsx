@@ -10,7 +10,9 @@ import { Eyebrow } from "@/components/shared/eyebrow"
 import { Button } from "@/components/ui/button"
 import {
   ApiError,
+  completeProgramModule,
   createProgramCheckout,
+  downloadCertificate,
   enrollInProgram,
   getProgramBySlug,
   getSuggestedCurrency,
@@ -168,6 +170,35 @@ function EnrollAction({
   )
 }
 
+function CertificateAction({ program, token }: { program: PublicProgramDetail; token: string }) {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState("")
+
+  async function handleDownload() {
+    setBusy(true)
+    setError("")
+    try {
+      await downloadCertificate(token, program.id, `${program.slug}-certificate.pdf`)
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to download certificate. Please try again.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="bg-success-bg border border-border rounded-xl p-6 text-center mb-6">
+      <p className="text-[14px] text-success-text font-semibold mb-3">
+        ✓ You&apos;ve completed all modules in this program.
+      </p>
+      {error && <p className="text-[13px] text-destructive mb-3">{error}</p>}
+      <Button disabled={busy} onClick={handleDownload}>
+        {busy ? "Preparing…" : "Download Certificate"}
+      </Button>
+    </div>
+  )
+}
+
 export default function ProgramDetailPage() {
   const params = useParams<{ slug: string }>()
   const slug = params.slug
@@ -177,6 +208,8 @@ export default function ProgramDetailPage() {
   const [program, setProgram] = useState<PublicProgramDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [completingId, setCompletingId] = useState<string | null>(null)
+  const [completeError, setCompleteError] = useState("")
   const requestIdRef = useRef(0)
 
   // The effect below re-fires as the session token resolves from undefined
@@ -204,6 +237,20 @@ export default function ProgramDetailPage() {
     const timeout = setTimeout(load, 0)
     return () => clearTimeout(timeout)
   }, [load])
+
+  async function handleMarkComplete(moduleId: string) {
+    if (!token || !program) return
+    setCompletingId(moduleId)
+    setCompleteError("")
+    try {
+      await completeProgramModule(token, program.id, moduleId)
+      load()
+    } catch (err) {
+      setCompleteError(err instanceof ApiError ? err.message : "Failed to mark module complete. Please try again.")
+    } finally {
+      setCompletingId(null)
+    }
+  }
 
   if (loading) {
     return (
@@ -291,32 +338,60 @@ export default function ProgramDetailPage() {
 
             {program.modules.length > 0 && (
               <div className="bg-card border border-border rounded-xl p-6 mb-6">
-                <h2 className="text-section-label text-muted-foreground font-bold mb-3">Curriculum</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-section-label text-muted-foreground font-bold">Curriculum</h2>
+                  {program.enrolled && (
+                    <span className="text-[12.5px] font-semibold text-muted-foreground">
+                      {program.completedModuleIds.length} of {program.modules.length} modules complete
+                    </span>
+                  )}
+                </div>
+                {completeError && <p className="text-[13px] text-destructive mb-3">{completeError}</p>}
                 <ul className="space-y-2.5">
-                  {program.modules.map((m, i) => (
-                    <li key={m.id} className="flex items-center gap-3 text-[14px] text-foreground">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
-                        {i + 1}
-                      </span>
-                      {m.videoUrl ? (
-                        <a href={m.videoUrl} target="_blank" rel="noreferrer" className="text-gold hover:underline">
-                          {m.title}
-                        </a>
-                      ) : (
-                        <span>{m.title}</span>
-                      )}
-                    </li>
-                  ))}
+                  {program.modules.map((m, i) => {
+                    const isComplete = program.completedModuleIds.includes(m.id)
+                    return (
+                      <li key={m.id} className="flex items-center gap-3 text-[14px] text-foreground">
+                        <span
+                          className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                            isComplete ? "bg-success-bg text-success-text" : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {isComplete ? "✓" : i + 1}
+                        </span>
+                        {m.videoUrl ? (
+                          <a href={m.videoUrl} target="_blank" rel="noreferrer" className="text-gold hover:underline">
+                            {m.title}
+                          </a>
+                        ) : (
+                          <span>{m.title}</span>
+                        )}
+                        {program.enrolled && !isComplete && (
+                          <button
+                            onClick={() => handleMarkComplete(m.id)}
+                            disabled={completingId === m.id}
+                            className="ml-auto text-[12.5px] font-semibold text-gold hover:underline disabled:opacity-60"
+                          >
+                            {completingId === m.id ? "Marking…" : "Mark Complete"}
+                          </button>
+                        )}
+                      </li>
+                    )
+                  })}
                 </ul>
               </div>
             )}
 
             {program.enrolled ? (
-              <div className="bg-success-bg border border-border rounded-xl p-6 text-center">
-                <p className="text-[14px] text-success-text font-semibold">
-                  ✓ You&apos;re enrolled in this program — curriculum links above are unlocked.
-                </p>
-              </div>
+              program.completedAt && token ? (
+                <CertificateAction program={program} token={token} />
+              ) : (
+                <div className="bg-success-bg border border-border rounded-xl p-6 text-center">
+                  <p className="text-[14px] text-success-text font-semibold">
+                    ✓ You&apos;re enrolled in this program — curriculum links above are unlocked.
+                  </p>
+                </div>
+              )
             ) : (
               <EnrollAction program={program} token={token} onEnrolled={load} />
             )}

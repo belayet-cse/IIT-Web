@@ -857,6 +857,8 @@ export interface PublicProgramDetail {
   publishedAt: string | null
   enrolled: boolean
   modules: ProgramModuleInfo[]
+  completedModuleIds: string[]
+  completedAt: string | null
 }
 
 export function getPrograms(params: { type?: string; page?: number; limit?: number } = {}) {
@@ -872,6 +874,32 @@ export function getProgramBySlug(slug: string, token?: string) {
 
 export function enrollInProgram(token: string, programId: string) {
   return apiFetch<{ enrolled: boolean }>(`/programs/${programId}/enroll`, { method: "POST", token })
+}
+
+export function completeProgramModule(token: string, programId: string, moduleId: string) {
+  return apiFetch<{ completed: boolean }>(`/programs/${programId}/modules/${moduleId}/complete`, {
+    method: "POST",
+    token,
+  })
+}
+
+export async function downloadCertificate(token: string, programId: string, filename: string) {
+  const res = await fetch(`${API_URL}/programs/${programId}/certificate`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => null)
+    throw new ApiError(res.status, body?.message || `Request failed with status ${res.status}`)
+  }
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
 
 // ── Programs (admin) ─────────────────────────────────────────────────────────
