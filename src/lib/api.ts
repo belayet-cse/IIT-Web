@@ -440,10 +440,11 @@ export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED"
 
 export interface Payment {
   id: string
-  type: "MEMBERSHIP" | "BLOG" | "RESEARCH"
+  type: "MEMBERSHIP" | "BLOG" | "RESEARCH" | "PROGRAM"
   membershipTier: MembershipTier | null
   blogId: string | null
   paperId: string | null
+  programId: string | null
   currency: PaymentCurrency
   amount: number
   status: PaymentStatus
@@ -457,10 +458,11 @@ export interface AdminPaymentRow {
   id: string
   userName: string
   userEmail: string
-  type: "MEMBERSHIP" | "BLOG" | "RESEARCH"
+  type: "MEMBERSHIP" | "BLOG" | "RESEARCH" | "PROGRAM"
   membershipTier: MembershipTier | null
   blogTitle: string | null
   paperTitle: string | null
+  programTitle: string | null
   currency: PaymentCurrency
   amount: number
   discountPercent: number
@@ -495,6 +497,14 @@ export function createResearchCheckout(token: string, paperId: string, currency:
     method: "POST",
     token,
     body: JSON.stringify({ type: "RESEARCH", paperId, currency }),
+  })
+}
+
+export function createProgramCheckout(token: string, programId: string, currency: PaymentCurrency) {
+  return apiFetch<Payment>("/payments/checkout", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ type: "PROGRAM", programId, currency }),
   })
 }
 
@@ -797,6 +807,163 @@ export function updateResearchPaper(token: string, id: string, data: Partial<Res
 
 export function deleteResearchPaper(token: string, id: string) {
   return apiFetch<{ id: string }>(`/research/admin/${id}`, { method: "DELETE", token })
+}
+
+// ── Programs ─────────────────────────────────────────────────────────────────
+
+export type ProgramType = "INTERNATIONAL" | "PROPRIETARY"
+
+export interface ProgramSummary {
+  title: string
+  slug: string
+  code: string | null
+  type: ProgramType
+  overview: string
+  featuredImage: string | null
+  priceBdt: number
+  priceUsd: number
+  featured: boolean
+  author: string
+  publishedAt: string | null
+}
+
+export interface ProgramListResult {
+  data: ProgramSummary[]
+  meta: { page: number; limit: number; total: number; totalPages: number }
+}
+
+export interface ProgramModuleInfo {
+  id: string
+  title: string
+  videoUrl: string | null
+}
+
+export interface PublicProgramDetail {
+  id: string
+  title: string
+  slug: string
+  code: string | null
+  type: ProgramType
+  overview: string
+  whoItsFor: string | null
+  examInfo: string | null
+  featuredImage: string | null
+  priceBdt: number
+  priceUsd: number
+  discountPercent: number
+  finalPriceBdt: number
+  finalPriceUsd: number
+  author: string
+  publishedAt: string | null
+  enrolled: boolean
+  modules: ProgramModuleInfo[]
+}
+
+export function getPrograms(params: { type?: string; page?: number; limit?: number } = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v).map(([k, v]) => [k, String(v)])
+  ).toString()
+  return apiFetch<ProgramListResult>(`/programs${query ? `?${query}` : ""}`)
+}
+
+export function getProgramBySlug(slug: string, token?: string) {
+  return apiFetch<PublicProgramDetail>(`/programs/${slug}`, { token })
+}
+
+export function enrollInProgram(token: string, programId: string) {
+  return apiFetch<{ enrolled: boolean }>(`/programs/${programId}/enroll`, { method: "POST", token })
+}
+
+// ── Programs (admin) ─────────────────────────────────────────────────────────
+
+export interface AdminProgramRow {
+  id: string
+  title: string
+  slug: string
+  code: string | null
+  type: ProgramType
+  status: BlogStatus
+  priceBdt: number
+  priceUsd: number
+  featured: boolean
+  enrollmentCount: number
+  author: string
+  updatedAt: string
+}
+
+export interface ProgramModuleFormFields {
+  title: string
+  videoUrl?: string
+  sequence?: number
+}
+
+export interface ProgramDetail {
+  id: string
+  title: string
+  slug: string
+  code: string | null
+  type: ProgramType
+  overview: string
+  whoItsFor: string | null
+  examInfo: string | null
+  featuredImage: string | null
+  priceBdt: number
+  priceUsd: number
+  freeForBasic: boolean
+  freeForPro: boolean
+  freeForElite: boolean
+  featured: boolean
+  status: BlogStatus
+  authorId: string
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+  modules: { id: string; title: string; videoUrl: string | null; sequence: number }[]
+}
+
+export interface ProgramFormFields {
+  title: string
+  slug?: string
+  code?: string
+  type: ProgramType
+  overview: string
+  whoItsFor?: string
+  examInfo?: string
+  featuredImage?: string
+  priceBdt?: number
+  priceUsd?: number
+  freeForBasic?: boolean
+  freeForPro?: boolean
+  freeForElite?: boolean
+  featured?: boolean
+  status?: BlogStatus
+  modules?: ProgramModuleFormFields[]
+}
+
+export function getAdminPrograms(
+  token: string,
+  params: { search?: string; status?: BlogStatus; type?: string } = {}
+) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => !!v) as [string, string][]
+  ).toString()
+  return apiFetch<AdminProgramRow[]>(`/programs/admin${query ? `?${query}` : ""}`, { token })
+}
+
+export function getAdminProgram(token: string, id: string) {
+  return apiFetch<ProgramDetail>(`/programs/admin/${id}`, { token })
+}
+
+export function createProgram(token: string, data: ProgramFormFields) {
+  return apiFetch<ProgramDetail>("/programs/admin", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function updateProgram(token: string, id: string, data: Partial<ProgramFormFields>) {
+  return apiFetch<ProgramDetail>(`/programs/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deleteProgram(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/programs/admin/${id}`, { method: "DELETE", token })
 }
 
 // ── Forum ────────────────────────────────────────────────────────────────────

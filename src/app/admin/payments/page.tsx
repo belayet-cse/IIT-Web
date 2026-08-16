@@ -32,6 +32,7 @@ function formatAmount(row: AdminPaymentRow) {
 function describeItem(row: AdminPaymentRow) {
   if (row.type === "BLOG") return row.blogTitle ?? "Blog post"
   if (row.type === "RESEARCH") return row.paperTitle ?? "Research paper"
+  if (row.type === "PROGRAM") return row.programTitle ?? "Program"
   return row.membershipTier
 }
 
@@ -75,7 +76,9 @@ function MarkPaidModal({
           {row.userName} — {formatAmount(row)} for {describeItem(row)}. This immediately{" "}
           {row.type === "BLOG" || row.type === "RESEARCH"
             ? "unlocks it for them"
-            : "activates their Premium membership"}
+            : row.type === "PROGRAM"
+              ? "enrolls them in the program"
+              : "activates their Premium membership"}
           .
         </p>
         {error && (
@@ -94,7 +97,9 @@ function MarkPaidModal({
               ? "Confirming…"
               : row.type === "BLOG" || row.type === "RESEARCH"
                 ? "Confirm & Unlock"
-                : "Confirm & Activate Membership"}
+                : row.type === "PROGRAM"
+                  ? "Confirm & Enroll"
+                  : "Confirm & Activate Membership"}
           </Button>
           <Button variant="outline" onClick={onClose}>
             Cancel

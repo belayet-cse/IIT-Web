@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -132,17 +132,26 @@ export default function ResearchPaperPage() {
   const [paper, setPaper] = useState<PublicResearchPaperDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const requestIdRef = useRef(0)
 
+  // Guards against a slower anonymous request (fired before the session
+  // token resolves) overwriting a newer authenticated response.
   useEffect(() => {
+    const requestId = ++requestIdRef.current
     const timeout = setTimeout(() => {
       setLoading(true)
       setNotFound(false)
       getResearchPaperBySlug(slug, token)
-        .then(setPaper)
+        .then((data) => {
+          if (requestIdRef.current === requestId) setPaper(data)
+        })
         .catch((err) => {
+          if (requestIdRef.current !== requestId) return
           if (err instanceof ApiError && err.status === 404) setNotFound(true)
         })
-        .finally(() => setLoading(false))
+        .finally(() => {
+          if (requestIdRef.current === requestId) setLoading(false)
+        })
     }, 0)
     return () => clearTimeout(timeout)
   }, [slug, token])

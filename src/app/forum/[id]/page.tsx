@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -27,17 +27,25 @@ export default function ForumThreadPage() {
   const [posting, setPosting] = useState(false)
   const [error, setError] = useState("")
 
+  const requestIdRef = useRef(0)
+
   const load = useCallback(() => {
     if (!token) return
+    const requestId = ++requestIdRef.current
     setLoading(true)
     setNotFound(false)
     getForumThread(token, id)
-      .then(setThread)
+      .then((data) => {
+        if (requestIdRef.current === requestId) setThread(data)
+      })
       .catch((err) => {
+        if (requestIdRef.current !== requestId) return
         if (err instanceof ApiError && (err.status === 404 || err.status === 403)) setNotFound(true)
         else setError(err instanceof ApiError ? err.message : "Failed to load thread.")
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        if (requestIdRef.current === requestId) setLoading(false)
+      })
   }, [token, id])
 
   useEffect(() => {
