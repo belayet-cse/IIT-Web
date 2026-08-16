@@ -52,6 +52,7 @@ export interface AuthUser {
   mustChangePassword: boolean
   alumniVerificationStatus: AlumniVerificationStatus
   desiredMembershipTier: MembershipTier | null
+  membershipTier: MembershipTier | null
 }
 
 export interface RegisterFields {
@@ -382,6 +383,55 @@ export function rejectResearcherApplication(token: string, id: string, reviewNot
   })
 }
 
+// ── Membership ───────────────────────────────────────────────────────────────
+
+export interface MembershipPlan {
+  tier: MembershipTier
+  displayName: string
+  priceBdt: number
+  priceUsd: number
+  discountPercent: number
+  updatedAt: string
+}
+
+export function getMembershipPlans() {
+  return apiFetch<MembershipPlan[]>("/membership/plans")
+}
+
+export function updateMembershipPlan(
+  token: string,
+  tier: MembershipTier,
+  data: { displayName?: string; priceBdt?: number; priceUsd?: number; discountPercent?: number }
+) {
+  return apiFetch<MembershipPlan>(`/membership/admin/plans/${tier}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export interface PriceCalculation {
+  originalPrice: number
+  discountPercent: number
+  discountAmount: number
+  finalPrice: number
+}
+
+export function calculatePrice(token: string, price: number) {
+  return apiFetch<PriceCalculation>("/membership/calculate-price", { method: "POST", token, body: JSON.stringify({ price }) })
+}
+
+export function expressMembershipInterest(token: string, membershipTier: MembershipTier) {
+  return apiFetch<{ desiredMembershipTier: MembershipTier }>("/membership/express-interest", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ membershipTier }),
+  })
+}
+
+export function runMembershipExpiryCheck(token: string) {
+  return apiFetch<{ remindersSent: number; downgraded: number }>("/membership/admin/run-expiry-check", {
+    method: "POST",
+    token,
+  })
+}
+
 // ── Blogs (public) ────────────────────────────────────────────────────────────
 
 export type BlogStatus = "DRAFT" | "PUBLISHED"
@@ -618,6 +668,9 @@ export interface AdminUserRow {
   phone: string | null
   role: UserRole
   emailVerified: boolean
+  desiredMembershipTier: MembershipTier | null
+  membershipTier: MembershipTier | null
+  membershipExpiresAt: string | null
   createdAt: string
 }
 

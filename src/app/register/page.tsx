@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Mail, Lock, User, Check, CheckCircle } from "lucide-react"
 import { AuthLayout } from "@/components/layout/auth-layout"
@@ -8,7 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { ApiError, registerUser, type MembershipTier, type RegistrationType } from "@/lib/api"
+import {
+  ApiError,
+  getMembershipPlans,
+  registerUser,
+  type MembershipPlan,
+  type MembershipTier,
+  type RegistrationType,
+} from "@/lib/api"
 
 // ── Password strength ─────────────────────────────────────────────────────────
 
@@ -124,28 +131,30 @@ function TabBar({ active, onChange }: { active: RegistrationType; onChange: (t: 
 
 // ── Premium plan selector ────────────────────────────────────────────────────
 
-const PLANS: { id: MembershipTier; label: string; priceBdt: string; blurb: string }[] = [
-  { id: "BASIC", label: "Basic", priceBdt: "৳2,000/yr", blurb: "Member discounts + directory access" },
-  { id: "PRO", label: "Pro", priceBdt: "৳5,000/yr", blurb: "Everything in Basic + free certifications" },
-  { id: "ELITE", label: "Elite", priceBdt: "৳10,000/yr", blurb: "Everything in Pro + priority event access" },
-]
-
-function PlanSelector({ value, onChange }: { value: MembershipTier; onChange: (t: MembershipTier) => void }) {
+function PlanSelector({
+  plans,
+  value,
+  onChange,
+}: {
+  plans: MembershipPlan[]
+  value: MembershipTier
+  onChange: (t: MembershipTier) => void
+}) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-1">
-      {PLANS.map((plan) => (
+      {plans.map((plan) => (
         <button
-          key={plan.id}
+          key={plan.tier}
           type="button"
-          onClick={() => onChange(plan.id)}
+          onClick={() => onChange(plan.tier)}
           className={cn(
             "text-left border rounded-lg p-3.5 transition-colors",
-            value === plan.id ? "border-gold bg-gold/5" : "border-border hover:border-gold/40"
+            value === plan.tier ? "border-gold bg-gold/5" : "border-border hover:border-gold/40"
           )}
         >
-          <div className="text-[13px] font-bold text-navy">{plan.label}</div>
-          <div className="text-[12px] text-gold font-semibold mt-0.5">{plan.priceBdt}</div>
-          <div className="text-[11px] text-muted-foreground mt-1 leading-snug">{plan.blurb}</div>
+          <div className="text-[13px] font-bold text-navy">{plan.displayName}</div>
+          <div className="text-[12px] text-gold font-semibold mt-0.5">৳{plan.priceBdt.toLocaleString()}/yr</div>
+          <div className="text-[11px] text-muted-foreground mt-1 leading-snug">{plan.discountPercent}% member discount</div>
         </button>
       ))}
     </div>
@@ -215,6 +224,7 @@ function validate(form: FormState): FormErrors {
 export default function RegisterPage() {
   const [tab, setTab] = useState<RegistrationType>("GENERAL")
   const [membershipTier, setMembershipTier] = useState<MembershipTier>("BASIC")
+  const [plans, setPlans] = useState<MembershipPlan[]>([])
   const [form, setForm] = useState<FormState>(emptyForm)
   const [errors, setErrors] = useState<FormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
@@ -222,6 +232,10 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [formError, setFormError] = useState("")
+
+  useEffect(() => {
+    getMembershipPlans().then(setPlans).catch(() => {})
+  }, [])
 
   function set<K extends keyof FormState>(field: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -274,7 +288,7 @@ export default function RegisterPage() {
               <>
                 You&apos;re signed up with General access for now. Premium checkout is launching soon —
                 we&apos;ll email <strong className="text-navy">{form.email}</strong> to complete payment for the{" "}
-                {PLANS.find((p) => p.id === membershipTier)?.label} plan and activate your Premium benefits.
+                {plans.find((p) => p.tier === membershipTier)?.displayName ?? membershipTier} plan and activate your Premium benefits.
               </>
             )}
             {tab === "ALUMNI" && (
@@ -314,7 +328,7 @@ export default function RegisterPage() {
         {tab === "PREMIUM" && (
           <div className="mb-6">
             <Label>Choose a plan</Label>
-            <PlanSelector value={membershipTier} onChange={setMembershipTier} />
+            <PlanSelector plans={plans} value={membershipTier} onChange={setMembershipTier} />
           </div>
         )}
 

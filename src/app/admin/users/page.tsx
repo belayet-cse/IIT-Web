@@ -207,6 +207,18 @@ export default function AdminUsersPage() {
               },
               { key: "role", header: "Role", render: (row) => <span className="lowercase">{row.role}</span> },
               {
+                key: "membership",
+                header: "Membership",
+                render: (row) =>
+                  row.membershipTier ? (
+                    <Badge variant="verified">{row.membershipTier}</Badge>
+                  ) : row.desiredMembershipTier ? (
+                    <Badge variant="pending">Wants {row.desiredMembershipTier}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  ),
+              },
+              {
                 key: "verified",
                 header: "Verified",
                 render: (row) => <Badge variant={row.emailVerified ? "verified" : "pending"}>{row.emailVerified ? "Yes" : "No"}</Badge>,

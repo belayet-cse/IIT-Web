@@ -23,6 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             role: user.role,
             accessToken,
             mustChangePassword: user.mustChangePassword,
+            membershipTier: user.membershipTier,
           }
         } catch (error) {
           if (error instanceof ApiError) return null
@@ -47,6 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role as "ADMIN" | "ALUMNI" | "GENERAL" | "PREMIUM" | "RESEARCHER"
         token.accessToken = user.accessToken as string
         token.mustChangePassword = user.mustChangePassword as boolean
+        token.membershipTier = user.membershipTier as "BASIC" | "PRO" | "ELITE" | null
       }
       if (trigger === "update" && session?.mustChangePassword !== undefined) {
         token.mustChangePassword = session.mustChangePassword as boolean
@@ -60,6 +62,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       session.accessToken = token.accessToken as string
       session.mustChangePassword = token.mustChangePassword as boolean
+      session.membershipTier = token.membershipTier as "BASIC" | "PRO" | "ELITE" | null
       return session
     },
   },
