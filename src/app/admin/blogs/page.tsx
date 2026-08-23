@@ -256,6 +256,15 @@ function ListTab({
               header: "Actions",
               render: (row) => (
                 <div className="flex gap-2">
+                  <a
+                    href={`/blogs/${row.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Opens the real post page in a new tab — visible to you as an admin even while it's a draft."
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border text-navy border-border bg-white hover:bg-muted transition-colors"
+                  >
+                    Preview
+                  </a>
                   <Button size="sm" variant="outline" onClick={() => onEdit(row.id)}>
                     Edit
                   </Button>
@@ -578,6 +587,17 @@ function EditorTab({
         <Button disabled={isSaving} onClick={openPreview}>
           Preview
         </Button>
+        {editingId && form.slug && (
+          <a
+            href={`/blogs/${form.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            title="Opens the real post page in a new tab, showing the last saved version — not your unsaved edits above."
+            className="inline-flex items-center px-4 py-2 rounded-lg text-[13px] font-semibold border border-border bg-white hover:bg-muted transition-colors"
+          >
+            View Live Preview
+          </a>
+        )}
         <Button variant="secondary" disabled={isSaving} onClick={() => handleSubmit("DRAFT")}>
           {isSaving ? "Saving…" : "Save as draft"}
         </Button>
