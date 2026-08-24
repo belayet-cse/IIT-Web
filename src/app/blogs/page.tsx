@@ -60,7 +60,7 @@ export default function BlogsPage() {
               <p className="text-center text-sm text-destructive py-10">{error}</p>
             ) : result && result.data.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[22px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {result.data.map((post) => (
                     <BlogCard key={post.slug} {...post} />
                   ))}
