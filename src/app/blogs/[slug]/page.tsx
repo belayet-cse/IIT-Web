@@ -202,6 +202,9 @@ export default function BlogPostPage() {
           publishedAt={post.publishedAt}
           featuredImage={post.featuredImage}
           content={post.content}
+          tags={post.tags}
+          views={post.views}
+          locked={post.locked}
           lockedContent={
             <>
               {post.excerpt && (
