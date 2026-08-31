@@ -1148,11 +1148,14 @@ export function getAdminAnalytics(token: string) {
 
 // ── Forum ────────────────────────────────────────────────────────────────────
 
+export type ForumRole = "ADMIN" | "ALUMNI" | "GENERAL" | "PREMIUM" | "RESEARCHER"
+
 export interface ForumThreadSummary {
   id: string
   title: string
   category: string | null
   author: string
+  authorId: string
   pinned: boolean
   locked: boolean
   replyCount: number
@@ -1170,6 +1173,12 @@ export interface ForumReply {
   id: string
   content: string
   author: string
+  authorId: string
+  authorRole: ForumRole
+  authorOrganization: string | null
+  parentPostId: string | null
+  likeCount: number
+  isLiked: boolean
   createdAt: string
 }
 
@@ -1179,10 +1188,15 @@ export interface ForumThreadDetail {
   content: string
   category: string | null
   author: string
+  authorId: string
+  authorRole: ForumRole
+  authorOrganization: string | null
   pinned: boolean
   locked: boolean
   replyCount: number
   views: number
+  likeCount: number
+  isLiked: boolean
   lastActivityAt: string
   createdAt: string
   replies: ForumReply[]
@@ -1190,7 +1204,7 @@ export interface ForumThreadDetail {
 
 export function getForumThreads(
   token: string,
-  params: { category?: string; page?: number; limit?: number } = {}
+  params: { category?: string; search?: string; page?: number; limit?: number } = {}
 ) {
   const query = new URLSearchParams(
     Object.entries(params).filter(([, v]) => !!v).map(([k, v]) => [k, String(v)])
@@ -1206,11 +1220,30 @@ export function createForumThread(token: string, data: { title: string; content:
   return apiFetch<{ id: string }>("/forum/threads", { method: "POST", token, body: JSON.stringify(data) })
 }
 
-export function createForumReply(token: string, threadId: string, content: string) {
+export function createForumReply(
+  token: string,
+  threadId: string,
+  content: string,
+  parentPostId?: string
+) {
   return apiFetch<{ id: string }>(`/forum/threads/${threadId}/replies`, {
     method: "POST",
     token,
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, parentPostId }),
+  })
+}
+
+export function toggleForumPostLike(token: string, postId: string) {
+  return apiFetch<{ liked: boolean; likeCount: number }>(`/forum/posts/${postId}/like`, {
+    method: "POST",
+    token,
+  })
+}
+
+export function toggleForumThreadLike(token: string, threadId: string) {
+  return apiFetch<{ liked: boolean; likeCount: number }>(`/forum/threads/${threadId}/like`, {
+    method: "POST",
+    token,
   })
 }
 
