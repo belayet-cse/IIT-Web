@@ -12,7 +12,7 @@ interface ProgramCardProps {
 export function ProgramCard({ code, title, description, href = "#", className }: ProgramCardProps) {
   return (
     <div className={cn(
-      "bg-card border border-border rounded-lg p-10 hover:border-gold/50 transition-colors group",
+      "bg-card border border-border rounded-xl p-10 hover:border-gold/50 transition-colors group",
       className
     )}>
       <h3 className="font-heading text-[21px] text-navy mb-1">{code}</h3>

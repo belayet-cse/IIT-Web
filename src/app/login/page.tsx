@@ -232,7 +232,7 @@ export default function LoginPage() {
           {/* Apply link */}
           <Link
             href="/alumni/apply"
-            className="flex items-center justify-center w-full border border-border rounded-lg py-3 text-[13.5px] font-semibold text-navy hover:bg-muted/60 transition-colors"
+            className="flex items-center justify-center w-full border border-border rounded-sm py-3 text-[13.5px] font-semibold text-navy hover:bg-muted/60 transition-colors"
           >
             Apply for Alumni Membership
           </Link>

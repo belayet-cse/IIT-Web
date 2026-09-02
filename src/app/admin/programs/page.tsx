@@ -157,7 +157,7 @@ function ListTab({
                   <button
                     disabled={busyId === row.id}
                     onClick={() => handleDelete(row)}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border text-red-700 border-red-200 bg-white hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center px-3 py-1.5 rounded-sm text-xs font-semibold border text-red-700 border-red-200 bg-white hover:bg-red-50 transition-colors disabled:opacity-50"
                   >
                     Delete
                   </button>
@@ -460,13 +460,13 @@ export default function AdminProgramsPage() {
             )}
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 bg-navy text-white text-[13px] font-semibold px-[18px] py-[10px] rounded-lg hover:bg-navy/90 transition-colors"
+              className="inline-flex items-center gap-1.5 bg-navy text-white text-[13px] font-semibold px-[18px] py-[10px] rounded-sm hover:bg-navy/90 transition-colors"
             >
               View Live Site
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="inline-flex items-center gap-1.5 border border-border text-[13px] font-semibold px-[18px] py-[10px] rounded-lg hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-1.5 border border-border text-[13px] font-semibold px-[18px] py-[10px] rounded-sm hover:bg-muted transition-colors"
             >
               Sign out
             </button>

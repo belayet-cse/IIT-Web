@@ -91,7 +91,7 @@ function SuccessView() {
       </p>
       <Link
         href="/login"
-        className="flex items-center justify-center w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+        className="flex items-center justify-center w-full bg-primary text-primary-foreground rounded-sm py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
       >
         Sign in to your account →
       </Link>
@@ -175,7 +175,7 @@ function ResetPasswordContent() {
           </p>
           <Link
             href="/forgot-password"
-            className="flex items-center justify-center w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+            className="flex items-center justify-center w-full bg-primary text-primary-foreground rounded-sm py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
           >
             Request a new link
           </Link>

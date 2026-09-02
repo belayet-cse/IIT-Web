@@ -30,7 +30,7 @@ export function Footer({ className }: FooterProps) {
       <div className="max-w-[1180px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
         <div>
           <Link href="/" className="font-heading text-xl text-gold block mb-6">
-            IITrade
+            iiTrade
           </Link>
           <p className="text-sm text-white/60">
             © {new Date().getFullYear()} Institute of International Trade. All rights reserved.

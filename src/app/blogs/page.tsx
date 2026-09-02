@@ -71,7 +71,7 @@ export default function BlogsPage() {
                 placeholder="Search blog posts…"
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full h-11 pl-11 pr-4 rounded-full border border-border bg-card text-[14px] shadow-sm transition-shadow focus:outline-none focus:shadow-md focus:border-gold"
+                className="w-full h-11 pl-11 pr-4 rounded-sm border border-border bg-card text-[14px] shadow-sm transition-shadow focus:outline-none focus:shadow-md focus:border-gold"
               />
             </div>
 

@@ -161,13 +161,13 @@ export default function MembershipPage() {
 
             {!loading && (
               <div className="flex justify-center mb-8">
-                <div className="inline-flex bg-background border border-border rounded-lg p-1">
+                <div className="inline-flex bg-background border border-border rounded-md p-1">
                   {(["BDT", "USD"] as const).map((c) => (
                     <button
                       key={c}
                       onClick={() => setCurrency(c)}
                       className={cn(
-                        "px-4 py-1.5 rounded-md text-[13px] font-semibold transition-colors",
+                        "px-4 py-1.5 rounded-sm text-[13px] font-semibold transition-colors",
                         currency === c ? "bg-navy text-white" : "text-muted-foreground hover:text-navy"
                       )}
                     >

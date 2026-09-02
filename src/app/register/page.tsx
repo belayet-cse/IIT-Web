@@ -301,7 +301,7 @@ export default function RegisterPage() {
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center justify-center w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+            className="inline-flex items-center justify-center w-full bg-primary text-primary-foreground rounded-sm py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
           >
             Go to sign in →
           </Link>

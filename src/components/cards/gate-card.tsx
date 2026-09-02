@@ -44,14 +44,14 @@ export function GateCard({
       {isPrimary ? (
         <Link
           href={buttonHref}
-          className="inline-block bg-primary text-primary-foreground text-[13.5px] font-semibold px-[22px] py-3 rounded-lg hover:bg-primary/90 transition-opacity"
+          className="inline-flex items-center justify-center bg-primary text-primary-foreground text-[13.5px] font-semibold px-[22px] py-3 rounded-sm hover:bg-primary/90 transition-opacity"
         >
           {buttonLabel}
         </Link>
       ) : (
         <Link
           href={buttonHref}
-          className="inline-block border border-navy text-navy text-[13.5px] font-semibold px-[22px] py-3 rounded-lg hover:bg-navy hover:text-white transition-colors"
+          className="inline-flex items-center justify-center border border-navy text-navy text-[13.5px] font-semibold px-[22px] py-3 rounded-sm hover:bg-navy hover:text-white transition-colors"
         >
           {buttonLabel}
         </Link>

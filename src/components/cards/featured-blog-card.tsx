@@ -20,7 +20,7 @@ export function FeaturedBlogCard({
   return (
     <Link
       href={`/blogs/${slug}`}
-      className="group grid md:grid-cols-2 bg-card border border-border rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 mb-12"
+      className="group grid md:grid-cols-2 bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 mb-12"
     >
       <div className="relative aspect-[16/10] md:aspect-auto overflow-hidden">
         {featuredImage ? (
@@ -53,7 +53,7 @@ export function FeaturedBlogCard({
           )}
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ml-auto ${
-              isPaid ? "bg-navy text-white" : "bg-blue-500 text-white"
+              isPaid ? "bg-navy text-white" : "bg-white text-navy border border-border"
             }`}
           >
             {isPaid ? "Premium" : "Free"}

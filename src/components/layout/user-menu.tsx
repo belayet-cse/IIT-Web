@@ -27,7 +27,7 @@ export function UserMenu({ name, isAdmin, className }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-lg px-1.5 py-1 hover:bg-muted transition-colors"
+        className="flex items-center gap-2 rounded-sm px-1.5 py-1 hover:bg-muted transition-colors"
       >
         <Avatar initials={initialsFrom(name)} size="sm" />
         <span className="text-nav text-navy font-semibold hidden sm:inline">{name}</span>

@@ -27,7 +27,7 @@ export function Sidebar({ navGroups, activeItem, onItemClick, className }: Sideb
   return (
     <aside className={cn("w-[240px] bg-navy text-white flex-shrink-0 flex flex-col py-[22px]", className)}>
       <div className="px-[22px] pb-[22px] mb-4 border-b border-white/[0.08]">
-        <div className="font-heading font-bold text-[17px]">IITrade Admin</div>
+        <div className="font-heading font-bold text-[17px]">iiTrade Admin</div>
         <div className="text-section-label text-white/50 mt-[2px]">Management Console</div>
       </div>
 

@@ -72,7 +72,7 @@ export function TopNav({ links = defaultLinks, className }: TopNavProps) {
             </Link>
             <Link
               href="/alumni/apply"
-              className="bg-primary text-primary-foreground text-nav px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-opacity"
+              className="inline-flex items-center justify-center bg-primary text-primary-foreground text-nav px-5 py-2.5 rounded-sm hover:bg-primary/90 transition-opacity"
             >
               Apply Now
             </Link>

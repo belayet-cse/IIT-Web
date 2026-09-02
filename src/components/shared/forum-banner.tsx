@@ -18,7 +18,7 @@ export function ForumBanner({ title, description, buttonLabel, buttonHref, class
       </div>
       <Link
         href={buttonHref}
-        className="whitespace-nowrap flex-shrink-0 bg-primary text-primary-foreground text-nav font-semibold px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-opacity"
+        className="whitespace-nowrap flex-shrink-0 bg-primary text-primary-foreground text-nav font-semibold px-5 py-2.5 rounded-sm hover:bg-primary/90 transition-opacity"
       >
         {buttonLabel} &rarr;
       </Link>

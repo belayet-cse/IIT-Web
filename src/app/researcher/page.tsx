@@ -221,7 +221,7 @@ export default function ResearcherPage() {
             <SectionHeader eyebrow="Why Join" title="Researcher Benefits" />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[18px]">
               {benefits.map((b) => (
-                <div key={b.title} className="bg-background border border-border rounded-lg p-6 text-center">
+                <div key={b.title} className="bg-background border border-border rounded-xl p-6 text-center">
                   <div className="text-3xl mb-3" aria-hidden>
                     {b.icon}
                   </div>

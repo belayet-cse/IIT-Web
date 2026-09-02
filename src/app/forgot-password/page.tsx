@@ -73,7 +73,7 @@ function SuccessView({ email }: { email: string }) {
 
       <Link
         href="/login"
-        className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground rounded-lg py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+        className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground rounded-sm py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
       >
         Back to sign in
       </Link>

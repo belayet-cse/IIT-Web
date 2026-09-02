@@ -23,7 +23,7 @@ import {
 function CountList({ label, emails, tone = "default" }: { label: string; emails: string[]; tone?: "default" | "warn" }) {
   if (emails.length === 0) return null
   return (
-    <details className="border border-border rounded-lg px-4 py-3">
+    <details className="border border-border rounded-xl px-4 py-3">
       <summary className={`text-[13px] font-semibold cursor-pointer ${tone === "warn" ? "text-destructive" : "text-navy"}`}>
         {label} ({emails.length})
       </summary>
@@ -231,13 +231,13 @@ export default function AdminGoLivePage() {
             )}
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 bg-navy text-white text-[13px] font-semibold px-[18px] py-[10px] rounded-lg hover:bg-navy/90 transition-colors"
+              className="inline-flex items-center gap-1.5 bg-navy text-white text-[13px] font-semibold px-[18px] py-[10px] rounded-sm hover:bg-navy/90 transition-colors"
             >
               View Live Site
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="inline-flex items-center gap-1.5 border border-border text-[13px] font-semibold px-[18px] py-[10px] rounded-lg hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-1.5 border border-border text-[13px] font-semibold px-[18px] py-[10px] rounded-sm hover:bg-muted transition-colors"
             >
               Sign out
             </button>

@@ -115,7 +115,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-[18px]">
               <Link
                 href="/programs"
-                className="bg-card border border-border rounded-lg p-8 text-center hover:border-gold/50 hover:-translate-y-1 transition-all"
+                className="bg-card border border-border rounded-xl p-8 text-center hover:border-gold/50 hover:-translate-y-1 transition-all"
               >
                 <div className="text-4xl mb-3">📜</div>
                 <h3 className="text-[15px] font-semibold text-navy mb-1">Certification Programs</h3>
@@ -123,7 +123,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/research"
-                className="bg-card border border-border rounded-lg p-8 text-center hover:border-gold/50 hover:-translate-y-1 transition-all"
+                className="bg-card border border-border rounded-xl p-8 text-center hover:border-gold/50 hover:-translate-y-1 transition-all"
               >
                 <div className="text-4xl mb-3">🔬</div>
                 <h3 className="text-[15px] font-semibold text-navy mb-1">Research Publications</h3>
@@ -131,7 +131,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/alumni"
-                className="bg-card border border-border rounded-lg p-8 text-center hover:border-gold/50 hover:-translate-y-1 transition-all"
+                className="bg-card border border-border rounded-xl p-8 text-center hover:border-gold/50 hover:-translate-y-1 transition-all"
               >
                 <div className="text-4xl mb-3">🌐</div>
                 <h3 className="text-[15px] font-semibold text-navy mb-1">Alumni Network</h3>
@@ -158,7 +158,7 @@ export default function HomePage() {
                 Read Our Story →
               </Link>
             </div>
-            <div className="relative rounded-lg overflow-hidden border border-border aspect-[4/3] bg-muted flex items-center justify-center">
+            <div className="relative rounded-xl overflow-hidden border border-border aspect-[4/3] bg-muted flex items-center justify-center">
               <span className="text-muted-foreground/30 text-7xl select-none">🏛️</span>
             </div>
           </div>
@@ -176,7 +176,7 @@ export default function HomePage() {
               {coFounders.map((founder) => (
                 <div
                   key={founder.name}
-                  className="bg-card border border-border rounded-lg p-8 text-center hover:border-gold/50 transition-colors"
+                  className="bg-card border border-border rounded-xl p-8 text-center hover:border-gold/50 transition-colors"
                 >
                   {founder.photo ? (
                     <Image
@@ -232,7 +232,7 @@ export default function HomePage() {
             <div className="text-center mt-12">
               <Link
                 href="/programs"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-nav hover:bg-primary/90 transition-opacity"
+                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 rounded-sm text-nav hover:bg-primary/90 transition-opacity"
               >
                 View All Programs
               </Link>
@@ -293,7 +293,7 @@ export default function HomePage() {
               </div>
               <Link
                 href="/alumni"
-                className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-nav hover:bg-primary/90 transition-opacity mt-6 md:mt-0 whitespace-nowrap flex-shrink-0"
+                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-5 py-2.5 rounded-sm text-nav hover:bg-primary/90 transition-opacity mt-6 md:mt-0 whitespace-nowrap flex-shrink-0"
               >
                 View Directory
               </Link>
@@ -304,6 +304,7 @@ export default function HomePage() {
                 name="Sarah Khan"
                 role="Senior Trade Manager"
                 quote="The CDCS certification fundamentally elevated my technical understanding of complex credit structures, directly contributing to my recent promotion and allowing me to serve our multinational clients with greater authority."
+                dark
                 className="bg-[#2b3040] border-white/10"
               />
               <StoryCard
@@ -311,6 +312,7 @@ export default function HomePage() {
                 name="David Chen"
                 role="Trade Analyst"
                 quote="Connecting with the IITrade alumni network has been invaluable. The exchange of practical insights regarding emerging market regulations has given our team a significant competitive edge."
+                dark
                 className="bg-[#2b3040] border-white/10"
               />
             </div>
@@ -365,13 +367,13 @@ export default function HomePage() {
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
                 href="/alumni/apply"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-nav hover:bg-primary/90 transition-opacity"
+                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 rounded-sm text-nav hover:bg-primary/90 transition-opacity"
               >
                 Get Started Free
               </Link>
               <Link
                 href="/programs"
-                className="bg-transparent border border-white/60 text-white px-6 py-3 rounded-lg text-nav hover:bg-white/10 transition-colors"
+                className="inline-flex items-center justify-center bg-transparent border border-white/60 text-white px-6 py-3 rounded-sm text-nav hover:bg-white/10 transition-colors"
               >
                 Explore Programs
               </Link>
@@ -431,7 +433,7 @@ export default function HomePage() {
                       href={social.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 border border-border rounded-lg px-4 py-2.5 text-sm font-semibold text-navy hover:border-gold hover:text-gold transition-colors"
+                      className="inline-flex items-center gap-1.5 border border-border rounded-sm px-4 py-2.5 text-sm font-semibold text-navy hover:border-gold hover:text-gold transition-colors"
                     >
                       {social.label}
                     </a>
@@ -458,7 +460,7 @@ export default function HomePage() {
               />
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-nav hover:bg-primary/90 transition-opacity whitespace-nowrap"
+                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 rounded-sm text-nav hover:bg-primary/90 transition-opacity whitespace-nowrap"
               >
                 Subscribe
               </button>

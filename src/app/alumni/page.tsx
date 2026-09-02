@@ -140,7 +140,7 @@ export default function AlumniPage() {
                   </p>
                   <Link
                     href="/alumni/apply"
-                    className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-lg px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+                    className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-sm px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
                   >
                     Reapply for Membership →
                   </Link>

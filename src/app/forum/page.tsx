@@ -261,13 +261,13 @@ export default function ForumPage() {
                 <div className="flex gap-3 justify-center flex-wrap">
                   <Link
                     href="/membership"
-                    className="inline-block bg-gold text-navy text-[13px] font-semibold px-5 py-[11px] rounded-md hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center justify-center bg-gold text-navy text-[13px] font-semibold px-5 py-[11px] rounded-sm hover:opacity-90 transition-opacity"
                   >
                     Upgrade to Premium
                   </Link>
                   <Link
                     href="/alumni/apply"
-                    className="inline-block border border-navy text-navy text-[13px] font-semibold px-5 py-[11px] rounded-md hover:bg-navy hover:text-white transition-colors"
+                    className="inline-flex items-center justify-center border border-navy text-navy text-[13px] font-semibold px-5 py-[11px] rounded-sm hover:bg-navy hover:text-white transition-colors"
                   >
                     Alumni Access
                   </Link>

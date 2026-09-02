@@ -87,7 +87,7 @@ export default function ContactPage() {
                       href={social.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 border border-border rounded-lg px-3.5 py-2 text-[12.5px] font-semibold text-navy hover:border-gold hover:text-gold transition-colors"
+                      className="inline-flex items-center gap-1.5 border border-border rounded-sm px-3.5 py-2 text-[12.5px] font-semibold text-navy hover:border-gold hover:text-gold transition-colors"
                     >
                       {social.label}
                     </a>
@@ -112,7 +112,7 @@ export default function ContactPage() {
             />
             <div className="space-y-3">
               {faqs.map((faq) => (
-                <details key={faq.q} className="bg-card border border-border rounded-lg px-5 py-4 group">
+                <details key={faq.q} className="bg-card border border-border rounded-xl px-5 py-4 group">
                   <summary className="text-[14px] font-semibold text-navy cursor-pointer list-none flex items-center justify-between gap-3">
                     {faq.q}
                     <span className="text-gold group-open:rotate-45 transition-transform" aria-hidden>
@@ -142,7 +142,7 @@ export default function ContactPage() {
               />
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-nav hover:bg-primary/90 transition-opacity whitespace-nowrap"
+                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 rounded-sm text-nav hover:bg-primary/90 transition-opacity whitespace-nowrap"
               >
                 Subscribe
               </button>

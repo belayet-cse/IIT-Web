@@ -27,7 +27,7 @@ export function EventCard({ tag, title, description, date, location, rsvpHref = 
         </div>
         <Link
           href={rsvpHref}
-          className="inline-block border border-navy text-navy text-[12.5px] font-semibold px-4 py-2 rounded-lg hover:bg-navy hover:text-white transition-colors"
+          className="inline-flex items-center justify-center border border-navy text-navy text-[12.5px] font-semibold px-4 py-2 rounded-sm hover:bg-navy hover:text-white transition-colors"
         >
           RSVP
         </Link>

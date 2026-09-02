@@ -41,7 +41,7 @@ export function AuthLayout({ leftContent, children, className }: AuthLayoutProps
         <div className="relative z-10 flex flex-col h-full p-12">
           {/* Brand */}
           <Link href="/" className="group flex items-end gap-2.5 w-fit">
-            <span className="font-heading text-[26px] text-gold font-bold leading-none">IITrade</span>
+            <span className="font-heading text-[26px] text-gold font-bold leading-none">iiTrade</span>
             <span className="text-[10px] text-white/40 uppercase tracking-[0.14em] leading-none mb-[3px] font-sans">
               Institute of International Trade
             </span>

@@ -87,7 +87,7 @@ export default function EventsPage() {
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[18px]">
               {whyAttend.map((item) => (
-                <div key={item.title} className="bg-background border border-border rounded-lg p-6 text-center">
+                <div key={item.title} className="bg-background border border-border rounded-xl p-6 text-center">
                   <div className="text-3xl mb-3" aria-hidden>
                     {item.icon}
                   </div>
@@ -109,7 +109,7 @@ export default function EventsPage() {
             />
             <div className="space-y-3">
               {faqs.map((faq) => (
-                <details key={faq.q} className="bg-card border border-border rounded-lg px-5 py-4 group">
+                <details key={faq.q} className="bg-card border border-border rounded-xl px-5 py-4 group">
                   <summary className="text-[14px] font-semibold text-navy cursor-pointer list-none flex items-center justify-between gap-3">
                     {faq.q}
                     <span className="text-gold group-open:rotate-45 transition-transform" aria-hidden>
@@ -142,7 +142,7 @@ export default function EventsPage() {
             </p>
             <Link
               href="/contact?subject=Event%20Hosting"
-              className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-lg text-nav hover:bg-primary/90 transition-opacity"
+              className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 rounded-sm text-nav hover:bg-primary/90 transition-opacity"
             >
               Inquire About Hosting
             </Link>
@@ -165,7 +165,7 @@ export default function EventsPage() {
               />
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-nav hover:bg-primary/90 transition-opacity whitespace-nowrap"
+                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 rounded-sm text-nav hover:bg-primary/90 transition-opacity whitespace-nowrap"
               >
                 Subscribe
               </button>
