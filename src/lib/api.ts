@@ -169,8 +169,6 @@ export interface ApplicationFormFields {
   linkedin?: string
   designation: string
   organization: string
-  yearsExperience?: string
-  careerStage?: string
   certification: string
   yearCompleted: string
 }
@@ -554,7 +552,9 @@ export interface PublicBlogDetail {
   featuredImage: string | null
   metaTitle: string | null
   metaDescription: string | null
+  metaKeywords: string | null
   category: string | null
+  subCategory: string | null
   tags: string[]
   readingTime: number
   priceBdt: number
@@ -584,6 +584,7 @@ export interface AdminBlogRow {
   slug: string
   featuredImage: string | null
   category: string | null
+  subCategory: string | null
   tags: string[]
   sequence: number
   status: BlogStatus
@@ -603,7 +604,9 @@ export interface BlogDetail {
   featuredImage: string | null
   metaTitle: string | null
   metaDescription: string | null
+  metaKeywords: string | null
   category: string | null
+  subCategory: string | null
   tags: string[]
   status: BlogStatus
   priceBdt: number
@@ -624,7 +627,9 @@ export interface BlogFormFields {
   featuredImage?: string
   metaTitle?: string
   metaDescription?: string
+  metaKeywords?: string
   category?: string
+  subCategory?: string
   tags?: string[]
   status?: BlogStatus
   priceBdt?: number
@@ -1363,6 +1368,46 @@ export function reorderCategories(token: string, orderedIds: string[]) {
     method: "PATCH",
     token,
     body: JSON.stringify({ orderedIds }),
+  })
+}
+
+// ── Subcategories ─────────────────────────────────────────────────────────────
+
+export interface SubCategory {
+  id: string
+  name: string
+  categoryId: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}
+
+export function getSubCategories(categoryId?: string) {
+  const query = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : ""
+  return apiFetch<SubCategory[]>(`/subcategories${query}`)
+}
+
+export function createSubCategory(token: string, name: string, categoryId: string) {
+  return apiFetch<SubCategory>("/subcategories/admin", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ name, categoryId }),
+  })
+}
+
+export function updateSubCategory(token: string, id: string, data: { name?: string; categoryId?: string }) {
+  return apiFetch<SubCategory>(`/subcategories/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deleteSubCategory(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/subcategories/admin/${id}`, { method: "DELETE", token })
+}
+
+export function reorderSubCategories(token: string, categoryId: string, orderedIds: string[]) {
+  return apiFetch<SubCategory[]>("/subcategories/admin/reorder", {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ categoryId, orderedIds }),
   })
 }
 

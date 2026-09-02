@@ -24,6 +24,7 @@ import {
   getAdminBlog,
   getAdminBlogs,
   getCategories,
+  getSubCategories,
   reorderBlogs,
   updateBlog,
   type AdminBlogRow,
@@ -31,6 +32,7 @@ import {
   type BlogFormFields,
   type BlogStatus,
   type Category,
+  type SubCategory,
 } from "@/lib/api"
 
 // ── Content helpers ──────────────────────────────────────────────────────────
@@ -243,6 +245,7 @@ function ListTab({
               ),
             },
             { key: "category", header: "Category", render: (row) => row.category ?? "—" },
+            { key: "subCategory", header: "Subcategory", render: (row) => row.subCategory ?? "—" },
             { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> },
             { key: "views", header: "Views" },
             { key: "readingTime", header: "Reading", render: (row) => `${row.readingTime} min` },
@@ -261,7 +264,7 @@ function ListTab({
                     target="_blank"
                     rel="noreferrer"
                     title="Opens the real post page in a new tab — visible to you as an admin even while it's a draft."
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border text-navy border-border bg-white hover:bg-muted transition-colors"
+                    className="inline-flex items-center px-3 py-1.5 rounded-sm text-xs font-semibold border text-navy border-border bg-white hover:bg-muted transition-colors"
                   >
                     Preview
                   </a>
@@ -274,7 +277,7 @@ function ListTab({
                   <button
                     disabled={busyId === row.id}
                     onClick={() => handleDelete(row)}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border text-red-700 border-red-200 bg-white hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center px-3 py-1.5 rounded-sm text-xs font-semibold border text-red-700 border-red-200 bg-white hover:bg-red-50 transition-colors disabled:opacity-50"
                   >
                     Delete
                   </button>
@@ -299,7 +302,9 @@ const emptyForm: BlogFormFields = {
   featuredImage: "",
   metaTitle: "",
   metaDescription: "",
+  metaKeywords: "",
   category: "",
+  subCategory: "",
   status: "DRAFT",
   priceBdt: 0,
   priceUsd: 0,
@@ -413,6 +418,7 @@ function EditorTab({
   const [form, setForm] = useState<BlogFormFields>(emptyForm)
   const [tagsInput, setTagsInput] = useState("")
   const [categories, setCategories] = useState<Category[]>([])
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([])
   const [loading, setLoading] = useState(!!editingId)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
@@ -421,6 +427,16 @@ function EditorTab({
   useEffect(() => {
     getCategories().then(setCategories).catch(() => {})
   }, [])
+
+  const selectedCategoryId = categories.find((c) => c.name === form.category)?.id
+
+  useEffect(() => {
+    if (!selectedCategoryId) {
+      setSubCategories([])
+      return
+    }
+    getSubCategories(selectedCategoryId).then(setSubCategories).catch(() => {})
+  }, [selectedCategoryId])
 
   useEffect(() => {
     if (!editingId) return
@@ -434,7 +450,9 @@ function EditorTab({
           featuredImage: post.featuredImage ?? "",
           metaTitle: post.metaTitle ?? "",
           metaDescription: post.metaDescription ?? "",
+          metaKeywords: post.metaKeywords ?? "",
           category: post.category ?? "",
+          subCategory: post.subCategory ?? "",
           status: post.status,
           priceBdt: post.priceBdt,
           priceUsd: post.priceUsd,
@@ -479,7 +497,9 @@ function EditorTab({
         excerpt: form.excerpt?.trim() || undefined,
         metaTitle: form.metaTitle?.trim() || undefined,
         metaDescription: form.metaDescription?.trim() || undefined,
+        metaKeywords: form.metaKeywords?.trim() || undefined,
         category: form.category?.trim() || undefined,
+        subCategory: form.subCategory?.trim() || undefined,
         tags,
         status,
       }
@@ -519,7 +539,13 @@ function EditorTab({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormGroup label="Category">
-            <Select value={form.category} onChange={(e) => set("category", e.target.value)}>
+            <Select
+              value={form.category}
+              onChange={(e) => {
+                set("category", e.target.value)
+                set("subCategory", "")
+              }}
+            >
               <option value="">Select category…</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.name}>
@@ -528,10 +554,25 @@ function EditorTab({
               ))}
             </Select>
           </FormGroup>
-          <FormGroup label="Tags (Optional)">
-            <Input placeholder="comma, separated, tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
+          <FormGroup label="Subcategory" hint={!selectedCategoryId ? "Select a category first." : undefined}>
+            <Select
+              value={form.subCategory}
+              onChange={(e) => set("subCategory", e.target.value)}
+              disabled={!selectedCategoryId}
+            >
+              <option value="">Select subcategory…</option>
+              {subCategories.map((sc) => (
+                <option key={sc.id} value={sc.name}>
+                  {sc.name}
+                </option>
+              ))}
+            </Select>
           </FormGroup>
         </div>
+
+        <FormGroup label="Tags (Optional)">
+          <Input placeholder="comma, separated, tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
+        </FormGroup>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormGroup label="Price (BDT)" hint="0 = free for everyone, readable without an account.">
@@ -578,8 +619,12 @@ function EditorTab({
           <Input placeholder="Title for search engines" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />
         </FormGroup>
 
-        <FormGroup label="Meta Description (Optional)" hint="If empty, the excerpt will be used" className="mb-0">
+        <FormGroup label="Meta Description (Optional)" hint="If empty, the excerpt will be used">
           <Textarea rows={2} placeholder="Description for search engines" value={form.metaDescription} onChange={(e) => set("metaDescription", e.target.value)} />
+        </FormGroup>
+
+        <FormGroup label="Meta Keywords (Optional)" hint="Comma-separated keywords for search engines." className="mb-0">
+          <Input placeholder="ucp 600, documentary credit, trade finance" value={form.metaKeywords} onChange={(e) => set("metaKeywords", e.target.value)} />
         </FormGroup>
       </div>
 
@@ -593,7 +638,7 @@ function EditorTab({
             target="_blank"
             rel="noreferrer"
             title="Opens the real post page in a new tab, showing the last saved version — not your unsaved edits above."
-            className="inline-flex items-center px-4 py-2 rounded-lg text-[13px] font-semibold border border-border bg-white hover:bg-muted transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-sm text-[13px] font-semibold border border-border bg-white hover:bg-muted transition-colors"
           >
             View Live Preview
           </a>
@@ -639,6 +684,7 @@ function EditorTab({
               <PostView
                 title={form.title || "Untitled post"}
                 category={form.category}
+                subCategory={form.subCategory}
                 author={session?.user?.name ?? "IIT Admin"}
                 readingTime={form.readingTime ?? estimatePreviewReadingTime(form.content)}
                 publishedAt={null}
@@ -704,13 +750,13 @@ export default function AdminBlogsPage() {
             )}
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 bg-navy text-white text-[13px] font-semibold px-[18px] py-[10px] rounded-lg hover:bg-navy/90 transition-colors"
+              className="inline-flex items-center gap-1.5 bg-navy text-white text-[13px] font-semibold px-[18px] py-[10px] rounded-sm hover:bg-navy/90 transition-colors"
             >
               View Live Site
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="inline-flex items-center gap-1.5 border border-border text-[13px] font-semibold px-[18px] py-[10px] rounded-lg hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-1.5 border border-border text-[13px] font-semibold px-[18px] py-[10px] rounded-sm hover:bg-muted transition-colors"
             >
               Sign out
             </button>

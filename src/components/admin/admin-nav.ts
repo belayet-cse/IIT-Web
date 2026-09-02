@@ -8,6 +8,7 @@ export const adminNavGroups = [
     items: [
       { label: "Blog Posts", href: "/admin/blogs" },
       { label: "Categories", href: "/admin/categories" },
+      { label: "Subcategories", href: "/admin/subcategories" },
       { label: "Certifications", href: "/admin/programs" },
       { label: "Research Papers", href: "/admin/research" },
       { label: "Events", href: "/admin/events" },

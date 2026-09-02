@@ -63,12 +63,12 @@ function BlogPaywall({ post, token }: { post: PublicBlogDetail; token?: string }
         Read the excerpt above for free — unlock the full post to continue reading.
       </p>
 
-      <div className="inline-flex bg-background border border-border rounded-lg p-1 mb-5">
+      <div className="inline-flex bg-background border border-border rounded-md p-1 mb-5">
         {(["BDT", "USD"] as const).map((c) => (
           <button
             key={c}
             onClick={() => setCurrency(c)}
-            className={`px-4 py-1.5 rounded-md text-[13px] font-semibold transition-colors ${
+            className={`px-4 py-1.5 rounded-sm text-[13px] font-semibold transition-colors ${
               currency === c ? "bg-navy text-white" : "text-muted-foreground hover:text-navy"
             }`}
           >
@@ -197,6 +197,7 @@ export default function BlogPostClient() {
         <PostView
           title={post.title}
           category={post.category}
+          subCategory={post.subCategory}
           author={post.author}
           readingTime={post.readingTime}
           publishedAt={post.publishedAt}

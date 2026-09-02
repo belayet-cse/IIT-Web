@@ -7,6 +7,7 @@ import { Share2 } from "lucide-react"
 export interface PostViewProps {
   title: string
   category?: string | null
+  subCategory?: string | null
   author: string
   readingTime: number
   publishedAt?: string | Date | null
@@ -73,6 +74,7 @@ function EyeIcon({ className }: { className?: string }) {
 export function PostView({
   title,
   category,
+  subCategory,
   author,
   readingTime,
   publishedAt,
@@ -221,15 +223,22 @@ export function PostView({
           </article>
         </div>
 
-        {category && (
+        {(category || subCategory) && (
           <div className="py-2">
             <h2 className="font-sans text-2xl font-bold mb-4" style={{ color: COLOR_HEADING }}>
               Categories
             </h2>
             <div className="flex flex-wrap gap-2 mb-12">
-              <span className={badgeSolid} style={badgeSolidStyle}>
-                {category}
-              </span>
+              {category && (
+                <span className={badgeSolid} style={badgeSolidStyle}>
+                  {category}
+                </span>
+              )}
+              {subCategory && (
+                <span className={badgeSolid} style={badgeSolidStyle}>
+                  {subCategory}
+                </span>
+              )}
             </div>
           </div>
         )}

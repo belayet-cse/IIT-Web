@@ -22,9 +22,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? { url: `${API_ORIGIN}/blogs/${slug}/og-image`, width: 1200, height: 630, alt: title }
     : { url: "/opengraph-image", width: 1200, height: 630, alt: title }
 
+  const keywords = post.metaKeywords
+    ? post.metaKeywords.split(",").map((k) => k.trim()).filter(Boolean)
+    : undefined
+
   return {
     title,
     description,
+    keywords,
     alternates: { canonical: `/blogs/${slug}` },
     openGraph: {
       type: "article",

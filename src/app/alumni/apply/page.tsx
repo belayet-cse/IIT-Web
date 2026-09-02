@@ -30,8 +30,6 @@ const initialForm: ApplicationFormFields = {
   linkedin: "",
   designation: "",
   organization: "",
-  yearsExperience: "",
-  careerStage: "",
   certification: "",
   yearCompleted: "",
 }
@@ -111,7 +109,7 @@ export default function AlumniApplyPage() {
             </p>
             <Link
               href="/alumni"
-              className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-lg px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+              className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-sm px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
             >
               Back to Alumni Network →
             </Link>
@@ -143,7 +141,7 @@ export default function AlumniApplyPage() {
             </p>
             <Link
               href="/alumni"
-              className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-lg px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
+              className="inline-flex items-center justify-center bg-primary text-primary-foreground rounded-sm px-6 py-3 text-[14px] font-semibold hover:bg-primary/90 transition-opacity"
             >
               Back to Alumni Network →
             </Link>
@@ -251,31 +249,6 @@ export default function AlumniApplyPage() {
                   value={form.organization}
                   onChange={(e) => set("organization", e.target.value)}
                 />
-              </FormGroup>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[18px]">
-              <FormGroup label="Years in Trade Finance / Banking">
-                <Select
-                  value={form.yearsExperience}
-                  onChange={(e) => set("yearsExperience", e.target.value)}
-                >
-                  <option>Less than 2 years</option>
-                  <option>2–5 years</option>
-                  <option>5–10 years</option>
-                  <option>10+ years</option>
-                </Select>
-              </FormGroup>
-              <FormGroup label="Career Stage">
-                <Select
-                  value={form.careerStage}
-                  onChange={(e) => set("careerStage", e.target.value)}
-                >
-                  <option>Junior Officer</option>
-                  <option>Relationship Manager</option>
-                  <option>Unit / Department Head</option>
-                  <option>Veteran / Retired Banker</option>
-                </Select>
               </FormGroup>
             </div>
 
