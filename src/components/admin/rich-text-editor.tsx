@@ -56,6 +56,10 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
         "fullsize",
       ],
       toolbarAdaptive: false,
+      // The brush button's popup defaults to the Background tab, which made
+      // "coloring text" silently apply an invisible background tint instead —
+      // Text is the tab writers actually mean when they pick a color.
+      colorPickerDefaultTab: "color" as const,
       showCharsCounter: false,
       showWordsCounter: false,
       showXPathInStatusbar: false,
@@ -69,7 +73,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
   )
 
   return (
-    <div className={cn("rich-editor border border-border rounded-lg overflow-hidden", className)}>
+    <div className={cn("rich-editor border border-border rounded-sm overflow-hidden", className)}>
       <JoditEditor ref={editorRef} value={value} config={config} onBlur={onChange} />
     </div>
   )
