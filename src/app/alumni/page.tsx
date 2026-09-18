@@ -1,11 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { Calendar, MessageSquare } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { TopNav } from "@/components/layout/top-nav"
 import { Footer } from "@/components/layout/footer"
 import { Hero } from "@/components/shared/hero"
+import { HeroIconButton } from "@/components/shared/hero-icon-button"
+import { NoticeTicker, type Notice } from "@/components/shared/notice-ticker"
 import { StatBar } from "@/components/shared/stat-bar"
 import { ForumBanner } from "@/components/shared/forum-banner"
 import { LockedOverlay } from "@/components/shared/locked-overlay"
@@ -20,10 +23,16 @@ import {
   getAlumniDirectory,
   getAlumniPreview,
   getAlumniStats,
+  getEvents,
+  getForumStats,
+  getForumThreads,
   getMyApplication,
   type AlumniDirectoryEntry,
   type AlumniPreviewEntry,
   type AlumniStats,
+  type EventSummary,
+  type ForumStats,
+  type ForumThreadSummary,
   type MyApplicationStatus,
 } from "@/lib/api"
 
@@ -42,10 +51,65 @@ export default function AlumniPage() {
   const [country, setCountry] = useState("")
   const [myApplication, setMyApplication] = useState<MyApplicationStatus | null>(null)
   const [myApplicationLoaded, setMyApplicationLoaded] = useState(false)
+  const [forumStats, setForumStats] = useState<ForumStats | null>(null)
+  const [upcomingEvents, setUpcomingEvents] = useState<EventSummary[]>([])
+  const [latestThreads, setLatestThreads] = useState<ForumThreadSummary[]>([])
+
+  const canUseForum = ["PREMIUM", "ALUMNI", "ADMIN"].includes(session?.user?.role ?? "")
 
   useEffect(() => {
     getAlumniStats().then(setStats).catch(() => {})
+    getForumStats().then(setForumStats).catch(() => {})
+    getEvents({ when: "upcoming", limit: 4 })
+      .then((res) => setUpcomingEvents(res.data))
+      .catch(() => {})
   }, [])
+
+  // Thread titles are members-only, so only forum-eligible users see them in the ticker.
+  useEffect(() => {
+    if (!canUseForum || !session?.accessToken) return
+    getForumThreads(session.accessToken, { limit: 3 })
+      .then((res) => setLatestThreads(res.data))
+      .catch(() => {})
+  }, [canUseForum, session?.accessToken])
+
+  const notices = useMemo<Notice[]>(() => {
+    const items: Notice[] = upcomingEvents.map((event) => {
+      const date = new Date(event.startAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+      return {
+        text: `${event.title} — ${date}${event.location ? ` · ${event.location}` : ""}`,
+        href: "/events",
+      }
+    })
+    if (forumStats && forumStats.newThisWeek > 0) {
+      const n = forumStats.newThisWeek
+      items.push({
+        text: `${n} new discussion topic${n === 1 ? "" : "s"} this week in the Members Forum`,
+        href: "/forum",
+      })
+    }
+    for (const thread of latestThreads) {
+      items.push({
+        text: `New discussion: "${thread.title}" — ${thread.replyCount} ${thread.replyCount === 1 ? "reply" : "replies"}`,
+        href: `/forum/${thread.id}`,
+      })
+    }
+    // Live data can be empty (no upcoming events, quiet forum). The ticker should
+    // still always be there, so top it up with standing calls-to-action.
+    const standing: Notice[] = [
+      ...(isAlumni
+        ? []
+        : [{ text: "Apply for Alumni membership to unlock the full directory, events and forum", href: "/alumni/apply" }]),
+      { text: "Join the Members Forum — discuss real trade finance cases with your peers", href: "/forum" },
+      { text: "Browse upcoming alumni events, webinars and conferences", href: "/events" },
+      { text: "Read the latest articles on UCP 600 and documentary credits", href: "/blogs" },
+    ]
+    for (const notice of standing) {
+      if (items.length >= 4) break
+      items.push(notice)
+    }
+    return items
+  }, [upcomingEvents, forumStats, latestThreads, isAlumni])
 
   useEffect(() => {
     if (isAlumni) return
@@ -97,7 +161,21 @@ export default function AlumniPage() {
           eyebrow="Alumni Network"
           title="Alumni Network"
           subtitle="Connect with IITrade graduates across the global trade finance community. Find mentors, colleagues, and career opportunities."
+          titleActions={
+            <>
+              <HeroIconButton
+                href="/forum"
+                label="Forum"
+                icon={<MessageSquare strokeWidth={1.8} />}
+                badge={forumStats && forumStats.newThisWeek > 0 ? `${forumStats.newThisWeek} new` : undefined}
+              />
+              <HeroIconButton href="/events" label="Events" icon={<Calendar strokeWidth={1.8} />} />
+            </>
+          }
         />
+
+        {/* Notices */}
+        <NoticeTicker notices={notices} />
 
         {/* Stats */}
         <StatBar

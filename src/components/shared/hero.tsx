@@ -5,11 +5,13 @@ interface HeroProps {
   eyebrow?: string
   title: string
   subtitle?: string
+  /** Rendered inline beside the title (e.g. quick-link icon buttons). */
+  titleActions?: React.ReactNode
   className?: string
   children?: React.ReactNode
 }
 
-export function Hero({ eyebrow, title, subtitle, className, children }: HeroProps) {
+export function Hero({ eyebrow, title, subtitle, titleActions, className, children }: HeroProps) {
   return (
     <section
       className={cn("relative overflow-hidden text-white text-center py-[72px] pb-[48px]", className)}
@@ -27,7 +29,14 @@ export function Hero({ eyebrow, title, subtitle, className, children }: HeroProp
       />
       <div className="relative z-10 max-w-[1180px] mx-auto px-6">
         {eyebrow && <Eyebrow variant="light">{eyebrow}</Eyebrow>}
-        <h1 className="font-heading text-[44px] font-bold text-white mb-[14px]">{title}</h1>
+        {titleActions ? (
+          <div className="mb-[14px] flex flex-wrap items-center justify-center gap-[18px]">
+            <h1 className="font-heading text-[44px] font-bold text-white">{title}</h1>
+            {titleActions}
+          </div>
+        ) : (
+          <h1 className="font-heading text-[44px] font-bold text-white mb-[14px]">{title}</h1>
+        )}
         {subtitle && (
           <p className="max-w-[560px] mx-auto text-[16px]" style={{ color: "#c7cbe0" }}>
             {subtitle}

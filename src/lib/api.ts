@@ -1207,6 +1207,15 @@ export interface ForumThreadDetail {
   replies: ForumReply[]
 }
 
+export interface ForumStats {
+  newThisWeek: number
+  total: number
+}
+
+export function getForumStats() {
+  return apiFetch<ForumStats>("/forum/stats")
+}
+
 export function getForumThreads(
   token: string,
   params: { category?: string; search?: string; page?: number; limit?: number } = {}

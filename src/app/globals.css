@@ -196,7 +196,21 @@
   }
 }
 
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @layer utilities {
+  /* Notice ticker marquee — the track holds two copies of the list */
+  .animate-ticker {
+    animation: ticker-scroll 30s linear infinite;
+  }
+
   /* Eyebrow label: uppercase, wide-tracked, tiny — used above section titles */
   .text-eyebrow {
     font-family: var(--font-sans);
