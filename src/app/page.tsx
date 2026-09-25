@@ -3,6 +3,7 @@ import Link from "next/link"
 import { TopNav } from "@/components/layout/top-nav"
 import { Footer } from "@/components/layout/footer"
 import { HeroSlider } from "@/components/shared/hero-slider"
+import { SiteNoticeTicker } from "@/components/shared/site-notice-ticker"
 import { StatBar } from "@/components/shared/stat-bar"
 import { SectionHeader } from "@/components/shared/section-header"
 import { Eyebrow } from "@/components/shared/eyebrow"
@@ -93,6 +94,9 @@ export default function HomePage() {
 
         {/* Hero Slider */}
         <HeroSlider slides={slides} />
+
+        {/* Notices */}
+        <SiteNoticeTicker />
 
         {/* Global Impact Stats */}
         <StatBar

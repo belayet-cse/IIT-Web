@@ -1,9 +1,11 @@
 import Link from "next/link"
 import { Megaphone } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export interface Notice {
   text: string
-  href: string
+  /** Omit for a plain announcement with no destination — rendered as text, not a dead link. */
+  href?: string
 }
 
 interface NoticeTickerProps {
@@ -34,17 +36,26 @@ export function NoticeTicker({ notices, label = "Notices" }: NoticeTickerProps) 
           className="animate-ticker flex w-max py-[9px] motion-reduce:animate-none group-hover:[animation-play-state:paused]"
           style={{ animationDuration: `${seconds}s` }}
         >
-          {loop.map((notice, i) => (
-            <Link
-              key={i}
-              href={notice.href}
-              aria-hidden={i >= notices.length ? true : undefined}
-              tabIndex={i >= notices.length ? -1 : undefined}
-              className="relative whitespace-nowrap px-10 hover:underline after:absolute after:right-3 after:opacity-50 after:content-['•']"
-            >
-              {notice.text}
-            </Link>
-          ))}
+          {loop.map((notice, i) => {
+            const hidden = i >= notices.length
+            const itemClassName =
+              "relative whitespace-nowrap px-10 after:absolute after:right-3 after:opacity-50 after:content-['•']"
+            return notice.href ? (
+              <Link
+                key={i}
+                href={notice.href}
+                aria-hidden={hidden || undefined}
+                tabIndex={hidden ? -1 : undefined}
+                className={cn(itemClassName, "hover:underline")}
+              >
+                {notice.text}
+              </Link>
+            ) : (
+              <span key={i} aria-hidden={hidden || undefined} className={itemClassName}>
+                {notice.text}
+              </span>
+            )
+          })}
         </div>
       </div>
     </div>

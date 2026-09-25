@@ -1380,6 +1380,50 @@ export function reorderCategories(token: string, orderedIds: string[]) {
   })
 }
 
+// ── Notices ───────────────────────────────────────────────────────────────────
+
+export interface SiteNotice {
+  id: string
+  text: string
+  href: string | null
+  active: boolean
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}
+
+export function getNotices() {
+  return apiFetch<SiteNotice[]>("/notices")
+}
+
+export function getAdminNotices(token: string) {
+  return apiFetch<SiteNotice[]>("/notices/admin", { token })
+}
+
+export function createNotice(token: string, data: { text: string; href?: string; active?: boolean }) {
+  return apiFetch<SiteNotice>("/notices/admin", { method: "POST", token, body: JSON.stringify(data) })
+}
+
+export function updateNotice(
+  token: string,
+  id: string,
+  data: { text?: string; href?: string; active?: boolean }
+) {
+  return apiFetch<SiteNotice>(`/notices/admin/${id}`, { method: "PATCH", token, body: JSON.stringify(data) })
+}
+
+export function deleteNotice(token: string, id: string) {
+  return apiFetch<{ id: string }>(`/notices/admin/${id}`, { method: "DELETE", token })
+}
+
+export function reorderNotices(token: string, orderedIds: string[]) {
+  return apiFetch<SiteNotice[]>("/notices/admin/reorder", {
+    method: "PATCH",
+    token,
+    body: JSON.stringify({ orderedIds }),
+  })
+}
+
 // ── Subcategories ─────────────────────────────────────────────────────────────
 
 export interface SubCategory {

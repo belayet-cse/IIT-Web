@@ -7,6 +7,7 @@ export const adminNavGroups = [
     label: "Content",
     items: [
       { label: "Blog Posts", href: "/admin/blogs" },
+      { label: "Notices", href: "/admin/notices" },
       { label: "Categories", href: "/admin/categories" },
       { label: "Subcategories", href: "/admin/subcategories" },
       { label: "Certifications", href: "/admin/programs" },
