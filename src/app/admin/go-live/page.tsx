@@ -12,10 +12,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   ApiError,
+  confirmAlumniBulkImport,
   confirmAlumniCsv,
   confirmGoLive,
+  previewAlumniBulkImport,
   previewAlumniCsv,
   previewGoLive,
+  type AlumniBulkImportPreview,
   type AlumniCsvPreview,
   type GoLivePreview,
 } from "@/lib/api"
@@ -131,6 +134,7 @@ function GoLiveTab({ token }: { token: string }) {
   const [isConfirming, setIsConfirming] = useState(false)
   const [result, setResult] = useState<{ created: number; skipped: number } | null>(null)
   const [error, setError] = useState("")
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(false)
 
   async function handlePreview() {
     if (!file) return
@@ -150,7 +154,7 @@ function GoLiveTab({ token }: { token: string }) {
     if (!preview) return
     if (
       !window.confirm(
-        `Create ${preview.newEntries.length} new account(s) and email each a unique temporary password?`
+        `Create ${preview.newEntries.length} new account(s)${sendWelcomeEmail ? ", emailing each a unique temporary password" : " silently (no email — each activates later via Forgot Password)"}?`
       )
     ) {
       return
@@ -158,7 +162,7 @@ function GoLiveTab({ token }: { token: string }) {
     setError("")
     setIsConfirming(true)
     try {
-      const res = await confirmGoLive(token, preview.newEntries)
+      const res = await confirmGoLive(token, preview.newEntries, sendWelcomeEmail)
       setResult(res)
       setPreview(null)
       setFile(null)
@@ -173,16 +177,26 @@ function GoLiveTab({ token }: { token: string }) {
     <div className="max-w-[640px]">
       <p className="text-[13px] text-muted-foreground mb-5">
         Upload a CSV of <code>name,email</code> rows for the bulk go-live rollout. Each new account gets a
-        unique random temporary password (never shared) and is required to set their own password on
-        first login.
+        unique random temporary password (never shared in plain text unless you opt in below) and is
+        required to set their own password on first login.
       </p>
 
-      <div className="flex gap-2 mb-5">
+      <div className="flex gap-2 mb-3">
         <Input type="file" accept=".csv,.txt" className="py-2" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
         <Button disabled={!file || isPreviewing} onClick={handlePreview}>
           {isPreviewing ? "Reading…" : "Preview"}
         </Button>
       </div>
+
+      <label className="flex items-center gap-2 text-[13px] text-muted-foreground mb-5 cursor-pointer w-fit">
+        <input
+          type="checkbox"
+          checked={sendWelcomeEmail}
+          onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+          className="accent-gold"
+        />
+        Email login credentials to each new member (unchecked = silent import; they activate via Forgot Password)
+      </label>
 
       {error && <p className="text-[13px] text-destructive bg-destructive/10 rounded-lg px-3.5 py-2.5 mb-4">{error}</p>}
 
@@ -198,7 +212,108 @@ function GoLiveTab({ token }: { token: string }) {
           <CountList label="Already have accounts (skipped)" emails={preview.alreadyExistsEmails} tone="warn" />
 
           <Button disabled={isConfirming} onClick={handleConfirm} className="w-full">
-            {isConfirming ? "Creating…" : "Confirm & Send Welcome Emails"}
+            {isConfirming ? "Creating…" : sendWelcomeEmail ? "Confirm & Send Welcome Emails" : "Confirm & Create Accounts"}
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function AlumniBulkImportTab({ token }: { token: string }) {
+  const [file, setFile] = useState<File | null>(null)
+  const [preview, setPreview] = useState<AlumniBulkImportPreview | null>(null)
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [isConfirming, setIsConfirming] = useState(false)
+  const [result, setResult] = useState<{ created: number; failed: number } | null>(null)
+  const [error, setError] = useState("")
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(false)
+
+  async function handlePreview() {
+    if (!file) return
+    setError("")
+    setResult(null)
+    setIsPreviewing(true)
+    try {
+      setPreview(await previewAlumniBulkImport(token, file))
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to preview CSV.")
+    } finally {
+      setIsPreviewing(false)
+    }
+  }
+
+  async function handleConfirm() {
+    if (!preview) return
+    if (
+      !window.confirm(
+        `Import ${preview.newEntries.length} alumni record(s) as ALUMNI accounts/profiles${sendWelcomeEmail ? ", emailing each new login a unique temporary password" : " silently (no email — each activates later via Forgot Password)"}?`
+      )
+    ) {
+      return
+    }
+    setError("")
+    setIsConfirming(true)
+    try {
+      const res = await confirmAlumniBulkImport(token, preview.newEntries, sendWelcomeEmail)
+      setResult(res)
+      setPreview(null)
+      setFile(null)
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to import alumni.")
+    } finally {
+      setIsConfirming(false)
+    }
+  }
+
+  return (
+    <div className="max-w-[640px]">
+      <p className="text-[13px] text-muted-foreground mb-5">
+        Upload a CSV with a header row of <code>name,email,phone,linkedin,designation,organization,certification,batch,country</code>{" "}
+        (only <code>name</code> and <code>email</code> are required — fill in whatever else you have, blank
+        fields can be completed later from each profile&apos;s edit page). Each row becomes an alumni profile in
+        the public directory. Emails that already have an account are promoted to Alumni and linked, not
+        duplicated; emails with no account get a new one.
+      </p>
+
+      <div className="flex gap-2 mb-3">
+        <Input type="file" accept=".csv,.txt" className="py-2" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+        <Button disabled={!file || isPreviewing} onClick={handlePreview}>
+          {isPreviewing ? "Reading…" : "Preview"}
+        </Button>
+      </div>
+
+      <label className="flex items-center gap-2 text-[13px] text-muted-foreground mb-5 cursor-pointer w-fit">
+        <input
+          type="checkbox"
+          checked={sendWelcomeEmail}
+          onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+          className="accent-gold"
+        />
+        Email login credentials to newly-created accounts (unchecked = silent import; they activate via Forgot Password)
+      </label>
+
+      {error && <p className="text-[13px] text-destructive bg-destructive/10 rounded-lg px-3.5 py-2.5 mb-4">{error}</p>}
+
+      {result && (
+        <p className="text-[13px] text-success-text bg-success-bg rounded-lg px-3.5 py-2.5 mb-4">
+          Imported {result.created} alumni record(s), {result.failed} failed.
+        </p>
+      )}
+
+      {preview && (
+        <div className="bg-card border border-border rounded-xl p-5 space-y-3">
+          <CountList
+            label="New alumni records to import"
+            emails={preview.newEntries.map((e) => {
+              const details = [e.designation, e.organization].filter(Boolean).join(", ")
+              return `${e.name} <${e.email}>${details ? ` — ${details}` : ""}`
+            })}
+          />
+          <CountList label="Already imported (skipped)" emails={preview.alreadyExistsEmails} tone="warn" />
+
+          <Button disabled={isConfirming || preview.newEntries.length === 0} onClick={handleConfirm} className="w-full">
+            {isConfirming ? "Importing…" : "Confirm & Import"}
           </Button>
         </div>
       )}
@@ -209,7 +324,7 @@ function GoLiveTab({ token }: { token: string }) {
 export default function AdminGoLivePage() {
   const { data: session } = useSession()
   const token = session?.accessToken
-  const [tab, setTab] = useState<"alumni" | "golive">("alumni")
+  const [tab, setTab] = useState<"alumni" | "golive" | "alumni-import">("alumni")
 
   if (!token) {
     return (
@@ -250,12 +365,15 @@ export default function AdminGoLivePage() {
           tabs={[
             { id: "alumni", label: "Alumni Verification" },
             { id: "golive", label: "Bulk Go-Live Rollout" },
+            { id: "alumni-import", label: "Alumni Bulk Import" },
           ]}
           activeTab={tab}
-          onTabChange={(id) => setTab(id as "alumni" | "golive")}
+          onTabChange={(id) => setTab(id as "alumni" | "golive" | "alumni-import")}
         />
 
-        {tab === "alumni" ? <AlumniVerificationTab token={token} /> : <GoLiveTab token={token} />}
+        {tab === "alumni" && <AlumniVerificationTab token={token} />}
+        {tab === "golive" && <GoLiveTab token={token} />}
+        {tab === "alumni-import" && <AlumniBulkImportTab token={token} />}
       </div>
     </AdminShell>
   )

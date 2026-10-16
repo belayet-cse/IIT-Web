@@ -1338,11 +1338,44 @@ export function previewGoLive(token: string, file: File) {
   return apiFetch<GoLivePreview>("/admin/go-live/preview", { method: "POST", token, body: formData })
 }
 
-export function confirmGoLive(token: string, entries: GoLiveEntry[]) {
+export function confirmGoLive(token: string, entries: GoLiveEntry[], sendWelcomeEmail = false) {
   return apiFetch<{ created: number; skipped: number }>("/admin/go-live/confirm", {
     method: "POST",
     token,
-    body: JSON.stringify({ entries }),
+    body: JSON.stringify({ entries, sendWelcomeEmail }),
+  })
+}
+
+// ── Alumni bulk import ────────────────────────────────────────────────────────
+
+export interface AlumniImportEntry {
+  name: string
+  email: string
+  phone?: string
+  linkedin?: string
+  designation?: string
+  organization?: string
+  certification?: "CDCS" | "CSDG" | "CITF" | "CTFP" | "OTHER"
+  batch?: string
+  country?: string
+}
+
+export interface AlumniBulkImportPreview {
+  newEntries: AlumniImportEntry[]
+  alreadyExistsEmails: string[]
+}
+
+export function previewAlumniBulkImport(token: string, file: File) {
+  const formData = new FormData()
+  formData.append("file", file)
+  return apiFetch<AlumniBulkImportPreview>("/admin/alumni-import/preview", { method: "POST", token, body: formData })
+}
+
+export function confirmAlumniBulkImport(token: string, entries: AlumniImportEntry[], sendWelcomeEmail = false) {
+  return apiFetch<{ created: number; failed: number }>("/admin/alumni-import/confirm", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ entries, sendWelcomeEmail }),
   })
 }
 
