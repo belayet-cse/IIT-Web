@@ -63,12 +63,6 @@ const coFounders: CoFounder[] = [
     linkedin: "https://www.linkedin.com/in/md-tanveer-bin-hasan-pmp-cdcs-cspo-csdg-cdts-ceeb-39a88b3b/",
     photo: "/Md_Tanveer_Bin_Hasan.jpeg",
   },
-  {
-    name: "Md Belayet Hossain",
-    title: "Co-Founder & Director",
-    linkedin: "https://www.linkedin.com/in/mohammad-belayet-hossain/",
-    photo: "/Md_Belayet_hossain.jpeg",
-  },
 ]
 
 // Bangladeshi given names commonly carry an honorific first token (Md, ATM, etc.);
@@ -176,7 +170,7 @@ export default function HomePage() {
               title="Meet Our Co-Founders"
               subtitle="The founding team behind the Institute of International Trade."
             />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-[18px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[18px] max-w-[760px] mx-auto">
               {coFounders.map((founder) => (
                 <div
                   key={founder.name}
