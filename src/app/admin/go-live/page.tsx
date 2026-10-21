@@ -176,7 +176,7 @@ function GoLiveTab({ token }: { token: string }) {
   return (
     <div className="max-w-[640px]">
       <p className="text-[13px] text-muted-foreground mb-5">
-        Upload a CSV of <code>name,email</code> rows for the bulk go-live rollout. Each new account gets a
+        Use this for <strong>general members</strong> (for example members of the old site). Accounts are created as General with no alumni privileges. Upload a CSV of <code>name,email</code> rows. Each new account gets a
         unique random temporary password (never shared in plain text unless you opt in below) and is
         required to set their own password on first login.
       </p>
@@ -268,6 +268,9 @@ function AlumniBulkImportTab({ token }: { token: string }) {
 
   return (
     <div className="max-w-[640px]">
+      <p className="text-[13px] font-semibold text-destructive mb-2">
+        Only for people you know are verified alumni. Everyone imported here gets Alumni privileges (directory listing, alumni discount, private forum). Use General Members Import for everyone else.
+      </p>
       <p className="text-[13px] text-muted-foreground mb-5">
         Upload a CSV with a header row of <code>name,email,phone,linkedin,designation,organization,certification,batch,country</code>{" "}
         (only <code>name</code> and <code>email</code> are required — fill in whatever else you have, blank
@@ -364,8 +367,8 @@ export default function AdminGoLivePage() {
         <AdminTabs
           tabs={[
             { id: "alumni", label: "Alumni Verification" },
-            { id: "golive", label: "Bulk Go-Live Rollout" },
-            { id: "alumni-import", label: "Alumni Bulk Import" },
+            { id: "golive", label: "General Members Import" },
+            { id: "alumni-import", label: "Verified Alumni Import" },
           ]}
           activeTab={tab}
           onTabChange={(id) => setTab(id as "alumni" | "golive" | "alumni-import")}
